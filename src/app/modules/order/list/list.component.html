@@ -1,0 +1,45 @@
+<div class="table-wrapper">
+  <div class="table-title">
+    <div class="title">Danh sách đơn hàng</div>
+    <a class="btn create-btn" [routerLink]="['/order/create']">Thêm</a>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Họ tên</th>
+        <th>Số điện thoại</th>
+        <th>Email</th>
+        <th>Sản phẩm</th>
+        <th>Tổng tiền</th>
+        <th>Chức năng</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.name }}</td>
+        <td>{{ item.phoneNumber }}</td>
+        <td>{{ item.email }}</td>
+        <td>
+          <div *ngFor="let p of item.product">
+            Mã sản phẩm: {{ p.productId }} - Số lượng: {{ p.count }}
+          </div>
+        </td>
+        <td>{{ item.totalAmount | currency : "VND" : "symbol" : "1.2" }}</td>
+        <td>
+          <a class="btn edit-btn" (click)="goToEditOrder(item)">Sửa</a>
+          <app-delete
+            *ngIf="isOpenDeleteModal"
+            [orderIdDelete]="orderIdDelete"
+            (closedDeleteModal)="closeDeleteModal($event)"
+             (deleted)="handleDeleted($event)"
+          ></app-delete>
+          <button class="btn delete-btn" (click)="openDeleteModal(item)">
+            Xóa
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,84 @@
+<div class="order-wrapper">
+  <form class="order-form" [formGroup]="orderForm" (ngSubmit)="onSubmit()">
+    <h2>Đặt Hàng</h2>
+
+    <label for="name">Tên</label>
+    <input
+      type="text"
+      id="name"
+      name="name"
+      placeholder="Nhập tên của bạn"
+      formControlName="name"
+    />
+    <p
+      *ngIf="orderForm.get('name')?.invalid && orderForm.get('name')?.touched"
+      class="error"
+    >
+      Vui lòng nhập tên
+    </p>
+
+    <label for="phoneNumber">Số điện thoại</label>
+    <input
+      type="tel"
+      id="phone"
+      name="phoneNumber"
+      placeholder="Nhập số điện thoại"
+      formControlName="phoneNumber"
+    />
+    <p
+      *ngIf="orderForm.get('phoneNumber')?.invalid && orderForm.get('phoneNumber')?.touched"
+      class="error"
+    >
+      Số điện thoại không hợp lệ
+    </p>
+
+    <label for="email">Email</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      placeholder="Nhập địa chỉ email"
+      formControlName="email"
+    />
+    <p
+      *ngIf="orderForm.get('email')?.invalid && orderForm.get('email')?.touched"
+      class="error"
+    >
+      Email không hợp lệ
+    </p>
+
+    <label>Sản phẩm</label>
+    <div class="product">
+      <select id="product" name="product" (change)="onProductSelect($event)">
+        <option value="">-- Chọn sản phẩm --</option>
+        <option *ngFor="let product of products" [ngValue]="product">
+          {{ product.productId }}
+        </option>
+      </select>
+      <div class="count">
+        <input
+          type="text"
+          id="count"
+          name="count"
+          placeholder="Nhập số lượng sản phẩm"
+          [value]="countProduct"
+          (input)="onCountChange($event)"
+          [min]="1"
+        />
+        <p *ngIf="countProduct == 0" class="error">
+          Số lượng không được để là 0
+        </p>
+      </div>
+    </div>
+
+    <label for="email">Tổng tiền</label>
+    <input
+      type="text"
+      id="totalAmount"
+      name="totalAmount"
+      formControlName="totalAmount"
+    />
+
+    <button type="submit">Gửi Đơn Hàng</button>
+  </form>
+</div>
