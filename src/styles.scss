@@ -2,3 +2,7 @@
 
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap';
+
+.ng-select.ng-select-single .ng-select-container {
+  height: 46px !important;
+}

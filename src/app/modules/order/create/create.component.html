@@ -26,7 +26,10 @@
       formControlName="phoneNumber"
     />
     <p
-      *ngIf="orderForm.get('phoneNumber')?.invalid && orderForm.get('phoneNumber')?.touched"
+      *ngIf="
+        orderForm.get('phoneNumber')?.invalid &&
+        orderForm.get('phoneNumber')?.touched
+      "
       class="error"
     >
       Số điện thoại không hợp lệ
@@ -48,27 +51,48 @@
     </p>
 
     <label>Sản phẩm</label>
-    <div class="product">
-      <select id="product" name="product" (change)="onProductSelect($event)">
-        <option value="">-- Chọn sản phẩm --</option>
-        <option *ngFor="let product of products" [ngValue]="product">
-          {{ product.productId }}
-        </option>
-      </select>
-      <div class="count">
-        <input
-          type="text"
-          id="count"
-          name="count"
-          placeholder="Nhập số lượng sản phẩm"
-          [value]="countProduct"
-          (input)="onCountChange($event)"
-          [min]="1"
-        />
-        <p *ngIf="countProduct == 0" class="error">
-          Số lượng không được để là 0
-        </p>
+    <div formArrayName="products">
+      <div
+        *ngFor="let group of productsArray.controls; let i = index"
+        [formGroupName]="i"
+        class="product-item"
+      >
+        <div class="title-and-action">
+          <label>Sản phẩm {{ i + 1 }}</label>
+          <button
+            class="btn delete-btn"
+            type="button"
+            (click)="removeProduct(i)"
+            *ngIf="productsArray.length > 1"
+          >
+            Xóa sản phẩm {{ i + 1 }}
+          </button>
+        </div>
+        <div class="product">
+          <ng-select
+            [items]="products"
+            bindLabel="name"
+            bindValue="productId"
+            placeholder="Chọn sản phẩm"
+            formControlName="productId"
+          >
+          </ng-select>
+          <div class="count">
+            <input
+              type="number"
+              formControlName="count"
+              min="1"
+              placeholder="Số lượng"
+            />
+          </div>
+        </div>
       </div>
+    </div>
+
+    <div class="add-product">
+      <button class="btn create-btn" type="button" (click)="addProduct()">
+        Thêm sản phẩm
+      </button>
     </div>
 
     <label for="email">Tổng tiền</label>
@@ -79,6 +103,9 @@
       formControlName="totalAmount"
     />
 
-    <button type="submit">Gửi Đơn Hàng</button>
+    <div class="action-order-form">
+      <a class="btn create-btn" [routerLink]="['/order']">Trờ lại danh sách</a>
+      <button class="btn create-btn" type="submit">Tạo Đơn Hàng</button>
+    </div>
   </form>
 </div>

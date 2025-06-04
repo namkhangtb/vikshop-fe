@@ -18,7 +18,7 @@ export interface Order {
   name: string;
   phoneNumber: string;
   email: string;
-  product?: ProductItem[];
+  products?: ProductItem[];
   totalAmount?: number;
 }
 
@@ -51,9 +51,5 @@ export class OrderService {
 
   getProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(`${this.apiUrl}/product`);
-  }
-
-  getProductByProductId(productId: string): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/product/${productId}`);
   }
 }

@@ -1,60 +1,103 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import {
-  FormControl,
+  FormArray,
+  FormBuilder,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { OrderService } from '../order.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    RouterLink,
+    NgSelectModule,
+  ],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',
 })
 export class CreateComponent {
-  constructor(private orderService: OrderService, private router: Router) {}
+  constructor(
+    private orderService: OrderService,
+    private router: Router,
+    private fb: FormBuilder
+  ) {}
 
-  orderForm = new FormGroup({
-    name: new FormControl<string>('', [Validators.required]),
-    phoneNumber: new FormControl<string>('', [
-      Validators.required,
-      Validators.pattern(/^[0-9]{10,15}$/),
-    ]),
-    email: new FormControl<string>('', [Validators.required, Validators.email]),
-    totalAmount: new FormControl<number>(
-      { value: 0, disabled: true },
-      Validators.required
-    ),
+  orderForm = this.fb.group({
+    name: ['', Validators.required],
+    phoneNumber: [
+      '',
+      [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)],
+    ],
+    email: ['', [Validators.required, Validators.email]],
+    products: this.fb.array([]),
+    totalAmount: [{ value: 0, disabled: true }, Validators.required],
   });
 
   products: any[] = [];
-  selectedProduct: any = null;
-  countProduct: number = 1;
-  priceProduct: number = 0;
 
   ngOnInit() {
-    this.orderService.getProducts().subscribe({
-      next: (data) => (this.products = data),
-      error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
+    this.fetchProducts();
+    this.addProduct();
+  }
+
+  get productsArray(): FormArray {
+    return this.orderForm.get('products') as FormArray;
+  }
+
+  createProductGroup(productId = '', count = 1): FormGroup {
+    const group = this.fb.group({
+      productId: [productId, Validators.required],
+      count: [count, [Validators.required, Validators.min(1)]],
     });
+    group.valueChanges.subscribe(() => this.calculateTotalAmount());
+    return group;
+  }
+
+  addProduct(productId = '', count = 1) {
+    this.productsArray.push(this.createProductGroup(productId, count));
+  }
+
+  removeProduct(index: number) {
+    this.productsArray.removeAt(index);
+    this.calculateTotalAmount();
+  }
+
+  calculateTotalAmount() {
+    let total = 0;
+    for (const group of this.productsArray.controls) {
+      const { productId, count } = group.value;
+      const product = this.products.find((p) => p.productId === productId);
+      if (product) {
+        total += count * product.price;
+      }
+    }
+    this.orderForm.get('totalAmount')?.setValue(total);
   }
 
   onSubmit() {
+    if (this.orderForm.invalid) return;
+
+    const formValue = this.orderForm.getRawValue();
     const formData = {
-      name: this.orderForm.get('name')?.value,
-      phoneNumber: this.orderForm.get('phoneNumber')?.value,
-      email: this.orderForm.get('email')?.value,
-      product: [{ productId: this.selectedProduct, count: this.countProduct }],
+      name: formValue.name,
+      phoneNumber: formValue.phoneNumber,
+      email: formValue.email,
+      products: formValue.products,
+      totalAmount: formValue.totalAmount,
     };
 
     this.orderService.createOrder(formData).subscribe({
-      next: (data) => {
+      next: () => {
         console.log('Đặt hàng thành công');
         this.router.navigate(['/order']);
       },
@@ -64,31 +107,12 @@ export class CreateComponent {
     });
   }
 
-  onProductSelect(event: any) {
-    this.selectedProduct = event.target.value;
-    this.orderService.getProductByProductId(this.selectedProduct).subscribe({
+  fetchProducts() {
+    this.orderService.getProducts().subscribe({
       next: (data) => {
-        this.priceProduct = data.price;
-        this.caculatorTotalAmount();
+        this.products = data;
       },
-      error: (err) => {
-        console.error('Lỗi khi lấy dữ liệu', err);
-      },
+      error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
     });
-  }
-
-  onCountChange(event: any) {
-    const input = event.target as HTMLInputElement;
-    this.countProduct = Number(input.value);
-    this.caculatorTotalAmount();
-  }
-
-  caculatorTotalAmount() {
-    if (this.priceProduct > 0 && this.countProduct > 0) {
-      const total = this.priceProduct * this.countProduct;
-      this.orderForm.get('totalAmount')?.setValue(total);
-    } else {
-      this.orderForm.get('totalAmount')?.setValue(0);
-    }
   }
 }

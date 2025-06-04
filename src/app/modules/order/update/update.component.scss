@@ -43,23 +43,16 @@ $text-color-error: #ff0000;
       border: 1px solid $input-border;
     }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: $primary-color;
-      border: none;
-      color: white;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-
-      &:hover {
-        background-color: $primary-hover;
-      }
-    }
     .error {
       color: $text-color-error;
       margin-top: 0px;
+    }
+
+    .title-and-action {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .product {
@@ -86,4 +79,50 @@ $text-color-error: #ff0000;
       }
     }
   }
+
+  .add-product {
+    display: flex;
+    justify-content: center;
+  }
+  .action-order-form{
+    display: flex;
+    justify-content: space-between;
+  }
+}
+.btn {
+  padding: 8px 16px;
+  margin: 4px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+
+  &.create-btn {
+    background-color: #3498db;
+
+    &:hover {
+      background-color: #2980b9;
+    }
+  }
+
+  &.edit-btn {
+    background-color: #3498db;
+
+    &:hover {
+      background-color: #2980b9;
+    }
+  }
+
+  &.delete-btn {
+    background-color: #e74c3c;
+
+    &:hover {
+      background-color: #c0392b;
+    }
+  }
+}
+
+ng-select {
+  width: 100%;
 }
