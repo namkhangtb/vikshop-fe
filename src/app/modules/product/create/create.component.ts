@@ -52,7 +52,7 @@ export class CreateComponent {
     stock: [0, [Validators.min(0)]],
   });
 
-  urlImage: string = environment.apiUrl;
+  urlImage: string = environment.apiUrl + '/uploads/';
 
   goToProductList() {
     this.router.navigate(['/product']);

@@ -37,7 +37,7 @@ export class UpdateComponent {
   ) {}
 
   _id: string = '';
-  urlImage: string = environment.apiUrl;
+   urlImage: string = environment.apiUrl + '/uploads/';
 
   productForm = this.fb.group({
     productId: [''],

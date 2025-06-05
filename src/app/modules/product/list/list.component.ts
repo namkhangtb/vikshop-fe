@@ -18,7 +18,7 @@ export class ListComponent {
   items: Product[] = [];
   isOpenDeleteModal: boolean = false;
   productIdDelete: string = '';
-  urlImage: string = environment.apiUrl;
+  urlImage: string = environment.apiUrl + '/uploads/';
 
   ngOnInit() {
     this.fetchProducts();
