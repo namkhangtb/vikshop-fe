@@ -1,0 +1,80 @@
+<div class="table-wrapper">
+  <div class="table-title">
+    <div class="title">Danh sách đơn hàng</div>
+    <a class="btn create-btn" [routerLink]="['/product/create']">Thêm</a>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Mã sản phẩm</th>
+        <th>Tên sản phẩm</th>
+        <th>Ảnh</th>
+        <th>Giá bán lẻ</th>
+        <th>Giá nhập</th>
+        <th>Giá bán sỉ</th>
+        <th>Giá livestream</th>
+        <th>Giá thị trường</th>
+        <th>Giá upsale</th>
+        <th>Mã vạch</th>
+        <th>Khối lượng</th>
+        <th>Mô tả ngắn</th>
+        <th>Tồn kho</th>
+        <th>Chức năng</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.productId }}</td>
+        <td>{{ item.name }}</td>
+        <td>
+          <div class="product-images-row">
+            <ng-container *ngFor="let image of item.images; let j = index">
+              <img
+                *ngIf="image"
+                [src]="urlImage + image"
+                alt="Product Image"
+                class="product-image"
+              />
+            </ng-container>
+          </div>
+        </td>
+        <td>
+          {{ item.retailPrice | currency : "VND" : "symbol" : "1.2" }}
+        </td>
+        <td>
+          {{ item.importPrice | currency : "VND" : "symbol" : "1.2" }}
+        </td>
+        <td>
+          {{ item.wholesalePrice | currency : "VND" : "symbol" : "1.2" }}
+        </td>
+        <td>
+          {{ item.livestreamPrice | currency : "VND" : "symbol" : "1.2" }}
+        </td>
+        <td>
+          {{ item.marketPrice | currency : "VND" : "symbol" : "1.2" }}
+        </td>
+        <td>
+          {{ item.upsalePrice | currency : "VND" : "symbol" : "1.2" }}
+        </td>
+        <td>{{ item.barcode }}</td>
+        <td>{{ item.weight }}</td>
+        <td>{{ item.shortDescription }}</td>
+        <td>{{ item.stock }}</td>
+        <td>
+          <a class="btn edit-btn" (click)="goToEditProduct(item)">Sửa</a>
+          <app-delete
+            *ngIf="isOpenDeleteModal"
+            [productIdDelete]="productIdDelete"
+            (closedDeleteModal)="closeDeleteModal($event)"
+            (deleted)="handleDeleted($event)"
+          ></app-delete>
+          <button class="btn delete-btn" (click)="openDeleteModal(item)">
+            Xóa
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,14 @@
+.product-images-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 120px;
+
+  .product-image {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    flex: 0 0 calc(33.33% - 4px);
+    margin-bottom: 4px;
+  }
+}
