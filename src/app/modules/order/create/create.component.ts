@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -9,8 +9,20 @@ import {
   Validators,
 } from '@angular/forms';
 import { OrderService } from '../order.service';
-import { Router, RouterLink } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import {
+  faBox,
+  faCartShopping,
+  faEnvelope,
+  faMobileScreen,
+  faMoneyBillWave,
+  faUser,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { FormControl } from '@angular/forms';
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-create',
@@ -19,17 +31,23 @@ import { NgSelectModule } from '@ng-select/ng-select';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    RouterLink,
     NgSelectModule,
+    FontAwesomeModule,
+    NgxMaskDirective,
+    ToastrModule
   ],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',
+  providers: [provideNgxMask()],
 })
 export class CreateComponent {
+  @Output() added = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
+
   constructor(
     private orderService: OrderService,
-    private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toastr: ToastrService
   ) {}
 
   orderForm = this.fb.group({
@@ -45,9 +63,19 @@ export class CreateComponent {
 
   products: any[] = [];
 
+  faCartShopping = faCartShopping;
+  faUser = faUser;
+  faMobileScreen = faMobileScreen;
+  faEnvelope = faEnvelope;
+  faBox = faBox;
+  faMoneyBillWave = faMoneyBillWave;
+  faXmark = faXmark;
+
+  selectedProductControl = new FormControl(null);
+  isLoading = false;
+
   ngOnInit() {
     this.fetchProducts();
-    this.addProduct();
   }
 
   get productsArray(): FormArray {
@@ -63,8 +91,13 @@ export class CreateComponent {
     return group;
   }
 
-  addProduct(productId = '', count = 1) {
-    this.productsArray.push(this.createProductGroup(productId, count));
+  addProduct() {
+    const productId = this.selectedProductControl.value;
+    if (productId) {
+      this.productsArray.push(this.createProductGroup(productId, 1));
+      this.selectedProductControl.reset();
+      this.calculateTotalAmount();
+    }
   }
 
   removeProduct(index: number) {
@@ -86,23 +119,27 @@ export class CreateComponent {
 
   onSubmit() {
     if (this.orderForm.invalid) return;
-
+    this.isLoading = true;
     const formValue = this.orderForm.getRawValue();
     const formData = {
       name: formValue.name,
-      phoneNumber: formValue.phoneNumber,
+      phoneNumber: '0' + formValue.phoneNumber,
       email: formValue.email,
       products: formValue.products,
       totalAmount: formValue.totalAmount,
     };
-
     this.orderService.createOrder(formData).subscribe({
       next: () => {
-        console.log('Đặt hàng thành công');
-        this.router.navigate(['/order']);
+        this.toastr.success('Tạo đơn hàng thành công!');
+        this.added.emit();
+        this.close();
+        this.isLoading = false;
       },
       error: (err) => {
+        this.toastr.error('Tạo đơn hàng thất bại!');
         console.error('Lỗi khi đặt hàng', err);
+        this.close();
+        this.isLoading = false;
       },
     });
   }
@@ -114,5 +151,19 @@ export class CreateComponent {
       },
       error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
     });
+  }
+
+  close() {
+    this.closed.emit();
+    this.orderForm.reset();
+    while (this.productsArray.length > 0) {
+      this.productsArray.removeAt(0);
+    }
+    this.isLoading = false;
+  }
+
+  getProductName(productId: string): string {
+    const product = this.products.find((p) => p.productId === productId);
+    return product ? product.name : '';
   }
 }

@@ -1,0 +1,23 @@
+.action-btn {
+  background: #e3e8ef;
+  color: #232d4a;
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+  border-radius: 12px;
+
+  .fw-semibold {
+    color: #232d4a;
+    font-weight: 500;
+  }
+
+  &.active,
+  &:hover {
+    background: #b0bad4;
+    color: #18224a;
+
+    .fw-semibold {
+      color: #18224a;
+      font-weight: bold;
+    }
+  }
+}

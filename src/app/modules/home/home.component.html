@@ -1,0 +1,15 @@
+
+
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12 col-md-3 mb-3" *ngFor="let action of actions">
+      <div
+        class="action-btn d-flex align-items-center p-3 mb-2"
+        (click)="navigate(action.route)"
+      >
+        <fa-icon class="fs-2 me-3" [icon]="action.icon"></fa-icon>
+        <span class="fw-semibold fs-5">{{ action.title }}</span>
+      </div>
+    </div>
+  </div>
+</div>

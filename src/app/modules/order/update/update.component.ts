@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -6,11 +6,23 @@ import {
   FormsModule,
   ReactiveFormsModule,
   Validators,
+  FormControl,
 } from '@angular/forms';
 import { OrderService } from '../order.service';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
+import {
+  faBox,
+  faCartShopping,
+  faEnvelope,
+  faMobileScreen,
+  faMoneyBillWave,
+  faUser,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-update',
@@ -19,18 +31,23 @@ import { NgSelectModule } from '@ng-select/ng-select';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    RouterLink,
     NgSelectModule,
+    FontAwesomeModule,
+    ToastrModule,
   ],
   templateUrl: './update.component.html',
   styleUrl: './update.component.scss',
 })
-export class UpdateComponent {
+export class UpdateComponent implements OnInit {
+  @Input() orderId: string = '';
+  @Output() updated = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
+
   constructor(
     private orderService: OrderService,
-    private router: Router,
     private activatedRoute: ActivatedRoute,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toastr: ToastrService
   ) {}
 
   orderForm = this.fb.group({
@@ -40,17 +57,25 @@ export class UpdateComponent {
       [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)],
     ],
     email: ['', [Validators.required, Validators.email]],
-    totalAmount: [{ value: 0, disabled: true }, Validators.required],
     products: this.fb.array([]),
+    totalAmount: [{ value: 0, disabled: true }, Validators.required],
   });
 
-  orderId: string = '';
   products: any[] = [];
+  isLoading = false;
+
+  faCartShopping = faCartShopping;
+  faUser = faUser;
+  faMobileScreen = faMobileScreen;
+  faEnvelope = faEnvelope;
+  faBox = faBox;
+  faMoneyBillWave = faMoneyBillWave;
+  faXmark = faXmark;
+
+  selectedProductControl = new FormControl(null);
 
   ngOnInit() {
-    this.orderId = this.activatedRoute.snapshot.params['id'];
     this.fetchProducts();
-    this.fetchDataForm();
   }
 
   get productsArray(): FormArray {
@@ -66,8 +91,13 @@ export class UpdateComponent {
     return group;
   }
 
-  addProduct(productId = '', count = 1) {
-    this.productsArray.push(this.createProductGroup(productId, count));
+  addProduct() {
+    const productId = this.selectedProductControl.value;
+    if (productId) {
+      this.productsArray.push(this.createProductGroup(productId, 1));
+      this.selectedProductControl.reset();
+      this.calculateTotalAmount();
+    }
   }
 
   removeProduct(index: number) {
@@ -88,23 +118,29 @@ export class UpdateComponent {
   }
 
   onSubmit() {
-    if (this.orderForm.invalid) return;
-
+    if (this.orderForm.invalid || !this.orderId) return;
+    this.isLoading = true;
     const formValue = this.orderForm.getRawValue();
     const formData = {
       name: formValue.name,
-      phoneNumber: formValue.phoneNumber,
+      phoneNumber: '0' + formValue.phoneNumber,
       email: formValue.email,
       products: formValue.products,
       totalAmount: formValue.totalAmount,
     };
-
     this.orderService.updateOrder(formData, this.orderId).subscribe({
       next: () => {
-        console.log('Cập nhật thành công');
-        this.router.navigate(['/order']);
+        this.toastr.success('Cập nhật đơn hàng thành công!');
+        this.updated.emit();
+        this.close();
+        this.isLoading = false;
       },
-      error: (err) => console.error('Lỗi cập nhật', err),
+      error: (err) => {
+        this.toastr.error('Cập nhật đơn hàng thất bại!');
+        console.error('Lỗi khi cập nhật đơn hàng', err);
+        this.close();
+        this.isLoading = false;
+      },
     });
   }
 
@@ -112,28 +148,42 @@ export class UpdateComponent {
     this.orderService.getProducts().subscribe({
       next: (data) => {
         this.products = data;
+        this.fetchDataForm();
       },
       error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
     });
   }
 
   fetchDataForm() {
+    if (!this.orderId) return;
     this.orderService.getOrder(this.orderId).subscribe({
       next: (data: any) => {
-        console.log('Dữ liệu đơn hàng:', data);
         this.orderForm.patchValue({
           name: data.name,
-          phoneNumber: data.phoneNumber,
+          phoneNumber: data.phoneNumber?.replace(/^0/, ''),
           email: data.email,
         });
-
         this.productsArray.clear();
         for (let item of data.products) {
-          this.addProduct(item.productId, item.count);
+          this.productsArray.push(this.createProductGroup(item.productId, item.count));
         }
         this.calculateTotalAmount();
       },
       error: (err) => console.error('Lỗi khi lấy đơn hàng', err),
     });
+  }
+
+  close() {
+    this.closed.emit();
+    this.orderForm.reset();
+    while (this.productsArray.length > 0) {
+      this.productsArray.removeAt(0);
+    }
+    this.isLoading = false;
+  }
+
+  getProductName(productId: string): string {
+    const product = this.products.find((p) => p.productId === productId);
+    return product ? product.name : '';
   }
 }
