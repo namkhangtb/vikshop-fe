@@ -12,6 +12,7 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { FormsModule } from '@angular/forms';
 import { CreateComponent } from '../create/create.component';
 import { UpdateComponent } from '../update/update.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-list',
@@ -30,7 +31,8 @@ import { UpdateComponent } from '../update/update.component';
 export class ListComponent {
   constructor(
     private orderService: OrderService,
-    private modalService: BsModalService
+    private modalService: BsModalService,
+    private toastr: ToastrService
   ) {}
 
   faPlus = faPlus;
@@ -85,10 +87,12 @@ export class ListComponent {
       next: () => {
         this.fetchOrders();
         this.modalRef?.hide();
+        this.toastr.success('Xóa đơn hàng thành công!');
       },
       error: (err) => {
         console.error('Lỗi khi xóa đơn hàng', err);
         this.modalRef?.hide();
+        this.toastr.error('Xóa đơn hàng thất bại!');
       },
     });
   }

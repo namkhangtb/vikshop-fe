@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   FormBuilder,
   FormsModule,
@@ -13,6 +13,9 @@ import { UploadModule } from '../../upload/upload.module';
 import { UploadService } from '../../upload/upload.service';
 import { ProductService } from '../product.service';
 import { environment } from '../../../../environments/environment';
+import { faBox, faFileImage } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-create',
@@ -23,17 +26,28 @@ import { environment } from '../../../../environments/environment';
     ReactiveFormsModule,
     FormsModule,
     UploadModule,
+    FontAwesomeModule,
+    NgxMaskDirective,
   ],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',
   providers: [provideNgxMask()],
 })
 export class CreateComponent {
+  @Input() productId: string = '';
+  @Output() added = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
+
+  faBox = faBox;
+  faFileImage = faFileImage;
+
+  isLoading = false;
+
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
     private uploadService: UploadService,
-    private router: Router
+    private toastr: ToastrService
   ) {}
 
   productForm = this.fb.group({
@@ -55,19 +69,16 @@ export class CreateComponent {
   urlImage: string = environment.apiUrl + '/uploads/';
 
   goToProductList() {
-    this.router.navigate(['/product']);
+    this.close();
   }
 
   onImageSelected(event: any) {
     const files: FileList = event.target.files;
-
     const currentImages: string[] = this.productForm.get('images')?.value || [];
-
     if (currentImages.length + files.length > 9) {
-      alert('Chỉ được tải lên tối đa 9 ảnh');
+      this.toastr.error('Chỉ được tải lên tối đa 9 ảnh');
       return;
     }
-
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       this.uploadService.uploadFile(file).subscribe({
@@ -80,7 +91,7 @@ export class CreateComponent {
         },
         error: (err) => {
           console.error('Lỗi upload ảnh:', err);
-          alert('Upload ảnh thất bại');
+          this.toastr.error('Upload ảnh thất bại');
         },
       });
     }
@@ -92,35 +103,47 @@ export class CreateComponent {
     const filename = imageUrl.split('/').pop();
     if (!filename) {
       console.error('Không tìm thấy tên file từ URL', imageUrl);
+      this.toastr.error('Không tìm thấy tên file từ URL');
       return;
     }
     this.uploadService.deleteFile(filename).subscribe({
       next: () => {
         images.splice(index, 1);
         this.productForm.get('images')?.setValue(images);
+        this.toastr.success('Xóa ảnh thành công');
       },
       error: (err) => {
         console.error('Lỗi xóa ảnh:', err);
-        alert('Không thể xóa ảnh');
+        this.toastr.error('Không thể xóa ảnh');
       },
     });
   }
 
   onSubmit() {
     if (this.productForm.invalid) {
-      alert('Form chưa hợp lệ');
+      this.toastr.error('Form chưa hợp lệ');
       return;
     }
-
+    this.isLoading = true;
     this.productService.createProduct(this.productForm.value).subscribe({
       next: () => {
-        console.log('Tạo sản phẩm thành công');
-        this.router.navigate(['/product']);
+        this.toastr.success('Tạo sản phẩm thành công');
+        this.added.emit();
+        this.close();
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Tạo thất bại', err);
-        alert('Tạo sản phẩm thất bại');
+        this.toastr.error('Tạo sản phẩm thất bại');
+        this.close();
+        this.isLoading = false;
       },
     });
+  }
+
+  close() {
+    this.closed.emit();
+    this.productForm.reset();
+    this.isLoading = false;
   }
 }

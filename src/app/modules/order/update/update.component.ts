@@ -9,7 +9,6 @@ import {
   FormControl,
 } from '@angular/forms';
 import { OrderService } from '../order.service';
-import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
 import {
@@ -45,7 +44,6 @@ export class UpdateComponent implements OnInit {
 
   constructor(
     private orderService: OrderService,
-    private activatedRoute: ActivatedRoute,
     private fb: FormBuilder,
     private toastr: ToastrService
   ) {}

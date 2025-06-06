@@ -70,7 +70,7 @@
 
 <ng-template #templateModalUpdateOrder>
   <app-update
-    [orderId]="selectedOrder?._id || ''"
+    [orderId]="selectedOrder._id || ''"
     (updated)="onOrderUpdated()"
     (closed)="modalRef?.hide()"
   ></app-update>

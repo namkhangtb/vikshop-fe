@@ -1,43 +1,49 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   FormBuilder,
-  FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../product.service';
 import { CommonModule } from '@angular/common';
-import { NgxMaskDirective } from 'ngx-mask';
 import { UploadModule } from '../../upload/upload.module';
 import { UploadService } from '../../upload/upload.service';
 import { environment } from '../../../../environments/environment';
+import { faBox, faFileImage } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgxMaskDirective } from 'ngx-mask';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-update',
   standalone: true,
   imports: [
-    NgxMaskDirective,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
     UploadModule,
+    FontAwesomeModule,
+    NgxMaskDirective,
   ],
   templateUrl: './update.component.html',
   styleUrl: './update.component.scss',
 })
 export class UpdateComponent {
+  @Input() productId: string = '';
+  @Output() updated = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
+
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
     private productService: ProductService,
-    private uploadService: UploadService
+    private uploadService: UploadService,
+    private toastr: ToastrService
   ) {}
 
   _id: string = '';
-   urlImage: string = environment.apiUrl + '/uploads/';
+  urlImage: string = environment.apiUrl + '/uploads/';
+  isLoading = false;
 
   productForm = this.fb.group({
     productId: [''],
@@ -55,17 +61,29 @@ export class UpdateComponent {
     stock: [0, [Validators.min(0)]],
   });
 
+  faBox = faBox;
+  faFileImage = faFileImage;
+
   ngOnInit(): void {
-    this._id = this.route.snapshot.paramMap.get('id') || '';
+    this._id = this.productId || '';
     this.fetchDataForm();
   }
 
   onSubmit(): void {
     if (this.productForm.valid) {
+      this.isLoading = true;
       this.productService
         .updateProduct(this.productForm.value, this._id)
-        .subscribe(() => {
-          this.router.navigate(['/product']);
+        .subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.updated.emit();
+            this.toastr.success('Cập nhật sản phẩm thành công');
+          },
+          error: () => {
+            this.isLoading = false;
+            this.toastr.error('Cập nhật sản phẩm thất bại');
+          },
         });
     }
   }
@@ -92,7 +110,7 @@ export class UpdateComponent {
         },
         error: (err) => {
           console.error('Lỗi upload ảnh:', err);
-          alert('Upload ảnh thất bại');
+          this.toastr.error('Upload ảnh thất bại');
         },
       });
     }
@@ -110,20 +128,18 @@ export class UpdateComponent {
       next: () => {
         images.splice(index, 1);
         this.productForm.get('images')?.setValue(images);
+        this.toastr.success('Xóa ảnh thành công');
       },
       error: (err) => {
         console.error('Lỗi xóa ảnh:', err);
-        alert('Không thể xóa ảnh');
+        this.toastr.error('Không thể xóa ảnh');
       },
     });
   }
 
-  goToProductList(): void {
-    this.router.navigate(['/product']);
-  }
-
   fetchDataForm() {
     if (this._id) {
+      this.isLoading = true;
       this.productService.getProduct(this._id).subscribe({
         next: (data) => {
           this.productForm.patchValue({
@@ -140,9 +156,19 @@ export class UpdateComponent {
             upsalePrice: data.upsalePrice,
             images: data.images || [],
           });
+          this.isLoading = false;
         },
-        error: (err) => console.error('Lỗi khi lấy sản phẩm', err),
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Lỗi khi lấy sản phẩm', err);
+        },
       });
     }
+  }
+
+  close(): void {
+    this.closed.emit();
+    this.productForm.reset();
+    this.isLoading = false;
   }
 }

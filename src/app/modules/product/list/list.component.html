@@ -1,8 +1,11 @@
 <div class="container my-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0">Danh sách sản phẩm</h2>
-    <a class="btn btn-primary" [routerLink]="['/product/create']">
-      <i class="bi bi-plus-lg"></i> Thêm sản phẩm
+    <a
+      class="btn btn-primary"
+      (click)="openAddProductModal(templateModalAddProduct)"
+    >
+      <fa-icon [icon]="faPlus"></fa-icon> Thêm
     </a>
   </div>
   <div class="table-responsive shadow-sm rounded">
@@ -13,12 +16,7 @@
           <th scope="col">Mã sản phẩm</th>
           <th scope="col">Tên sản phẩm</th>
           <th scope="col">Ảnh</th>
-          <th scope="col">Giá bán lẻ</th>
-          <th scope="col">Giá nhập</th>
-          <th scope="col">Giá bán sỉ</th>
-          <th scope="col">Giá livestream</th>
-          <th scope="col">Giá thị trường</th>
-          <th scope="col">Giá upsale</th>
+          <th scope="col">Giá</th>
           <th scope="col">Mã vạch</th>
           <th scope="col">Khối lượng</th>
           <th scope="col">Mô tả ngắn</th>
@@ -39,39 +37,123 @@
                   [src]="urlImage + image"
                   alt="Product Image"
                   class="rounded border"
-                  style="width: 40px; height: 40px; object-fit: cover;"
+                  style="width: 40px; height: 40px; object-fit: cover"
                 />
               </ng-container>
             </div>
           </td>
-          <td>{{ item.retailPrice | currency : "VND" : "symbol" : "1.2" }}</td>
-          <td>{{ item.importPrice | currency : "VND" : "symbol" : "1.2" }}</td>
-          <td>{{ item.wholesalePrice | currency : "VND" : "symbol" : "1.2" }}</td>
-          <td>{{ item.livestreamPrice | currency : "VND" : "symbol" : "1.2" }}</td>
-          <td>{{ item.marketPrice | currency : "VND" : "symbol" : "1.2" }}</td>
-          <td>{{ item.upsalePrice | currency : "VND" : "symbol" : "1.2" }}</td>
+          <td>
+            <div style="min-width: 180px">
+              <div class="row g-0">
+                <div class="col-12 mb-1">
+                  <span class="text-dark">Giá bán lẻ: </span>
+                  <span class="fw-semibold">{{
+                    item.retailPrice | currency : "VND" : "symbol" : "1.2"
+                  }}</span>
+                </div>
+                <div class="col-12 mb-1">
+                  <span class="text-dark">Giá nhập: </span>
+                  <span class="fw-semibold">{{
+                    item.importPrice | currency : "VND" : "symbol" : "1.2"
+                  }}</span>
+                </div>
+                <div class="col-12 mb-1">
+                  <span class="text-dark">Giá bán sỉ: </span>
+                  <span class="fw-semibold">{{
+                    item.wholesalePrice | currency : "VND" : "symbol" : "1.2"
+                  }}</span>
+                </div>
+                <div class="col-12 mb-1">
+                  <span class="text-dark">Giá livestream: </span>
+                  <span class="fw-semibold">{{
+                    item.livestreamPrice | currency : "VND" : "symbol" : "1.2"
+                  }}</span>
+                </div>
+                <div class="col-12 mb-1">
+                  <span class="text-dark">Giá thị trường: </span>
+                  <span class="fw-semibold">{{
+                    item.marketPrice | currency : "VND" : "symbol" : "1.2"
+                  }}</span>
+                </div>
+                <div class="col-12">
+                  <span class="text-dark">Giá upsale: </span>
+                  <span class="fw-semibold">{{
+                    item.upsalePrice | currency : "VND" : "symbol" : "1.2"
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </td>
           <td>{{ item.barcode }}</td>
           <td>{{ item.weight }}</td>
           <td>{{ item.shortDescription }}</td>
           <td>{{ item.stock }}</td>
           <td>
             <div class="d-flex gap-2">
-              <button class="btn btn-sm btn-outline-primary" (click)="goToEditProduct(item)">
-                <i class="bi bi-pencil"></i> Sửa
+              <button
+                class="btn btn-sm btn-outline-primary"
+                (click)="
+                  openUpdateProductModal(templateModalUpdateProduct, item)
+                "
+              >
+                <fa-icon [icon]="faPenToSquare"></fa-icon> Sửa
               </button>
-              <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal(item)">
-                <i class="bi bi-trash"></i> Xóa
+              <button
+                class="btn btn-sm btn-outline-danger"
+                (click)="openDeleteModal(templateModalDeleteProduct, item)"
+              >
+                <fa-icon [icon]="faTrash"></fa-icon> Xóa
               </button>
             </div>
-            <app-delete
-              *ngIf="isOpenDeleteModal"
-              [productIdDelete]="productIdDelete"
-              (closedDeleteModal)="closeDeleteModal($event)"
-              (deleted)="handleDeleted($event)"
-            ></app-delete>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
 </div>
+
+<ng-template #templateModalAddProduct>
+  <app-create
+    (added)="onProductAdded()"
+    (closed)="modalRef?.hide()"
+  ></app-create>
+</ng-template>
+
+<ng-template #templateModalUpdateProduct>
+  <app-update
+    [productId]="selectedProduct._id || ''"
+    (updated)="onProductUpdated()"
+    (closed)="modalRef?.hide()"
+  ></app-update>
+</ng-template>
+
+<ng-template #templateModalUpdateProduct>
+  <app-update
+    [productId]="selectedProduct._id || ''"
+    (updated)="onProductUpdated()"
+    (closed)="modalRef?.hide()"
+  ></app-update>
+</ng-template>
+
+<ng-template #templateModalDeleteProduct>
+  <div class="modal-header bg-danger text-white">
+    <h3 class="modal-title">
+      <fa-icon [icon]="faTrash"></fa-icon> Xác nhận xóa sản phẩm
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <p>Bạn có chắc chắn muốn xóa sản phẩm này không?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" (click)="modalRef?.hide()">Hủy</button>
+    <button class="btn btn-danger" (click)="confirmDeleteProduct()">
+      <i class="bi bi-trash"></i> Xóa
+    </button>
+  </div>
+</ng-template>
