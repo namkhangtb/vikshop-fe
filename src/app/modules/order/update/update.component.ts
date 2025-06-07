@@ -22,6 +22,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'app-update',
@@ -33,6 +34,7 @@ import { ToastrModule, ToastrService } from 'ngx-toastr';
     NgSelectModule,
     FontAwesomeModule,
     ToastrModule,
+    NgxMaskDirective,
   ],
   templateUrl: './update.component.html',
   styleUrl: './update.component.scss',
@@ -163,7 +165,9 @@ export class UpdateComponent implements OnInit {
         });
         this.productsArray.clear();
         for (let item of data.products) {
-          this.productsArray.push(this.createProductGroup(item.productId, item.count));
+          this.productsArray.push(
+            this.createProductGroup(item.productId, item.count)
+          );
         }
         this.calculateTotalAmount();
       },

@@ -107,6 +107,7 @@ export class UpdateComponent {
             url,
           ];
           this.productForm.get('images')?.setValue(updatedImages);
+          this.toastr.success('Upload ảnh thành công');
         },
         error: (err) => {
           console.error('Lỗi upload ảnh:', err);

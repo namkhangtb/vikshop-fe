@@ -68,10 +68,6 @@ export class CreateComponent {
 
   urlImage: string = environment.apiUrl + '/uploads/';
 
-  goToProductList() {
-    this.close();
-  }
-
   onImageSelected(event: any) {
     const files: FileList = event.target.files;
     const currentImages: string[] = this.productForm.get('images')?.value || [];
@@ -88,6 +84,7 @@ export class CreateComponent {
             url,
           ];
           this.productForm.get('images')?.setValue(updatedImages);
+          this.toastr.success('Upload ảnh thành công');
         },
         error: (err) => {
           console.error('Lỗi upload ảnh:', err);

@@ -127,14 +127,6 @@
   ></app-update>
 </ng-template>
 
-<ng-template #templateModalUpdateProduct>
-  <app-update
-    [productId]="selectedProduct._id || ''"
-    (updated)="onProductUpdated()"
-    (closed)="modalRef?.hide()"
-  ></app-update>
-</ng-template>
-
 <ng-template #templateModalDeleteProduct>
   <div class="modal-header bg-danger text-white">
     <h3 class="modal-title">

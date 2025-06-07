@@ -164,8 +164,7 @@
             <div class="row g-2">
               <div class="col-auto">
                 <label
-                  class="d-flex align-items-center justify-content-center bg-light border rounded-2 shadow-sm m-0 p-0"
-                  style="width: 110px; height: 110px; cursor: pointer"
+                  class="d-flex align-items-center justify-content-center bg-light border rounded-2 shadow-sm m-0 p-0 image-upload-label"
                 >
                   <div
                     class="w-100 h-100 d-flex flex-column align-items-center justify-content-center"
@@ -193,8 +192,7 @@
                 >
                   <div class="col-auto">
                     <div
-                      class="position-relative bg-light border rounded-2 overflow-hidden shadow-sm"
-                      style="width: 110px; height: 110px"
+                      class="position-relative bg-light border rounded-2 overflow-hidden shadow-sm image-preview"
                     >
                       <img
                         [src]="urlImage + image"
@@ -203,14 +201,7 @@
                       />
                       <button
                         type="button"
-                        class="btn btn-light btn-sm position-absolute top-0 start-0 m-1 p-0 d-flex align-items-center justify-content-center rounded-circle border"
-                        style="
-                          width: 24px;
-                          height: 24px;
-                          font-size: 16px;
-                          opacity: 0.85;
-                          z-index: 2;
-                        "
+                        class="btn btn-light btn-sm position-absolute top-0 start-0 m-1 p-0 d-flex align-items-center justify-content-center rounded-circle border remove-image-btn"
                         (click)="removeImage(i)"
                         title="Xóa ảnh"
                       >

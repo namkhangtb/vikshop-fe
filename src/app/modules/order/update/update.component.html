@@ -1,177 +1,203 @@
 <div
-  class="d-flex justify-content-center align-items-center rounded-4 border-0 bg-light"
+  class="modal fade show d-block"
+  tabindex="-1"
+  style="background: rgba(0, 0, 0, 0.3)"
 >
-  <div
-    class="card shadow-lg rounded-4 border-0"
-    style="min-width: 420px; max-width: 540px; width: 100%"
-  >
-    <div class="card-header bg-gradient bg-primary text-white border-0 py-3">
-      <h4 class="mb-0 text-center fw-bold">
-        <fa-icon [icon]="faCartShopping" class="me-2"></fa-icon>Cập nhật Đơn Hàng
-      </h4>
-    </div>
-    <div class="card-body p-4">
-      <form class="order-form" [formGroup]="orderForm" (ngSubmit)="onSubmit()">
-        <div class="mb-3">
-          <label for="name" class="form-label fw-semibold">
-            <fa-icon [icon]="faUser" class="me-1 text-primary"></fa-icon>Họ tên
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0">
+      <div
+        class="modal-header bg-gradient bg-primary text-white border-0 py-3 rounded-top-4"
+      >
+        <h4 class="mb-0 text-center fw-bold w-100">
+          <fa-icon [icon]="faCartShopping" class="me-2"></fa-icon>Cập nhật Đơn
+          Hàng
+        </h4>
+        <button
+          type="button"
+          class="btn-close btn-close-white position-absolute end-0 me-3"
+          aria-label="Close"
+          (click)="close()"
+        ></button>
+      </div>
+      <div class="modal-body p-4">
+        <form
+          class="order-form"
+          [formGroup]="orderForm"
+          (ngSubmit)="onSubmit()"
+        >
+          <div class="mb-3">
+            <label for="name" class="form-label fw-semibold">
+              <fa-icon [icon]="faUser" class="me-1 text-primary"></fa-icon>Họ
+              tên
+            </label>
+            <input
+              type="text"
+              id="name"
+              class="form-control shadow-sm"
+              placeholder="Nhập tên của bạn"
+              formControlName="name"
+              [ngClass]="{
+                'is-invalid':
+                  orderForm.get('name')?.invalid &&
+                  orderForm.get('name')?.touched
+              }"
+            />
+            <div class="invalid-feedback">Vui lòng nhập tên</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="phoneNumber" class="form-label fw-semibold">
+              <fa-icon
+                [icon]="faMobileScreen"
+                class="me-1 text-primary"
+              ></fa-icon
+              >Số điện thoại
+            </label>
+            <input
+              type="text"
+              id="phone"
+              class="form-control shadow-sm"
+              placeholder="Nhập số điện thoại"
+              formControlName="phoneNumber"
+              [ngClass]="{
+                'is-invalid':
+                  orderForm.get('phoneNumber')?.invalid &&
+                  orderForm.get('phoneNumber')?.touched
+              }"
+              prefix="+84 "
+              mask="(000) 000 00 00"
+            />
+            <div class="invalid-feedback">Số điện thoại không hợp lệ</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label fw-semibold">
+              <fa-icon [icon]="faEnvelope" class="me-1 text-primary"></fa-icon
+              >Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              class="form-control shadow-sm"
+              placeholder="Nhập địa chỉ email"
+              formControlName="email"
+              [ngClass]="{
+                'is-invalid':
+                  orderForm.get('email')?.invalid &&
+                  orderForm.get('email')?.touched
+              }"
+            />
+            <div class="invalid-feedback">Email không hợp lệ</div>
+          </div>
+
+          <label class="form-label fw-semibold mb-2">
+            <fa-icon [icon]="faBox" class="me-1 text-primary"></fa-icon>Sản phẩm
           </label>
-          <input
-            type="text"
-            id="name"
-            class="form-control shadow-sm"
-            placeholder="Nhập tên của bạn"
-            formControlName="name"
-            [ngClass]="{
-              'is-invalid':
-                orderForm.get('name')?.invalid && orderForm.get('name')?.touched
-            }"
-          />
-          <div class="invalid-feedback">Vui lòng nhập tên</div>
-        </div>
+          <div class="mb-3 d-flex align-items-center gap-2">
+            <ng-select
+              [items]="products"
+              bindLabel="name"
+              bindValue="productId"
+              placeholder="Tìm kiếm và chọn sản phẩm"
+              [searchable]="true"
+              [clearable]="false"
+              class="w-100"
+              [formControl]="selectedProductControl"
+            >
+            </ng-select>
+            <button
+              class="btn btn-outline-primary fw-semibold ms-2"
+              type="button"
+              (click)="addProduct()"
+              [disabled]="!selectedProductControl.value"
+              [ngClass]="{
+                'opacity-50': !selectedProductControl.value,
+                'pointer-events-none': !selectedProductControl.value
+              }"
+            >
+              Thêm
+            </button>
+          </div>
 
-        <div class="mb-3">
-          <label for="phoneNumber" class="form-label fw-semibold">
-            <fa-icon [icon]="faMobileScreen" class="me-1 text-primary"></fa-icon>Số điện thoại
-          </label>
-          <input
-            type="text"
-            id="phone"
-            class="form-control shadow-sm"
-            placeholder="Nhập số điện thoại"
-            formControlName="phoneNumber"
-            [ngClass]="{
-              'is-invalid':
-                orderForm.get('phoneNumber')?.invalid &&
-                orderForm.get('phoneNumber')?.touched
-            }"
-            prefix="+84 "
-            mask="(000) 000 00 00"
-          />
-          <div class="invalid-feedback">Số điện thoại không hợp lệ</div>
-        </div>
-
-        <div class="mb-3">
-          <label for="email" class="form-label fw-semibold">
-            <fa-icon [icon]="faEnvelope" class="me-1 text-primary"></fa-icon>Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            class="form-control shadow-sm"
-            placeholder="Nhập địa chỉ email"
-            formControlName="email"
-            [ngClass]="{
-              'is-invalid':
-                orderForm.get('email')?.invalid &&
-                orderForm.get('email')?.touched
-            }"
-          />
-          <div class="invalid-feedback">Email không hợp lệ</div>
-        </div>
-
-        <label class="form-label fw-semibold mb-2">
-          <fa-icon [icon]="faBox" class="me-1 text-primary"></fa-icon>Sản phẩm
-        </label>
-        <div class="mb-3 d-flex align-items-center gap-2">
-          <ng-select
-            [items]="products"
-            bindLabel="name"
-            bindValue="productId"
-            placeholder="Tìm kiếm và chọn sản phẩm"
-            [searchable]="true"
-            [clearable]="false"
-            class="w-100"
-            [formControl]="selectedProductControl"
-          >
-          </ng-select>
-          <button
-            class="btn btn-outline-primary fw-semibold ms-2"
-            type="button"
-            (click)="addProduct()"
-            [disabled]="!selectedProductControl.value"
-            [ngClass]="{
-              'opacity-50': !selectedProductControl.value,
-              'pointer-events-none': !selectedProductControl.value
-            }"
-          >
-            Thêm
-          </button>
-        </div>
-
-        <div formArrayName="products">
-          <div
-            *ngFor="let group of productsArray.controls; let i = index"
-            [formGroupName]="i"
-            class="border rounded-3 p-3 mb-3 bg-light d-flex align-items-center justify-content-between"
-          >
-            <div class="d-flex align-items-center gap-3">
-              <span class="badge bg-primary">{{ i + 1 }}</span>
-              <span class="fw-semibold">{{
-                getProductName(group.get('productId')?.value)
-              }}</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <input
-                type="text"
-                formControlName="count"
-                min="1"
-                class="form-control form-control-sm text-center"
-                placeholder="Số lượng"
-                style="width: 80px"
-                mask="separator"
-              />
-              <button
-                class="btn btn-sm btn-outline-danger"
-                type="button"
-                (click)="removeProduct(i)"
-                *ngIf="productsArray.length > 1"
-                title="Xóa sản phẩm"
-              >
-                <fa-icon [icon]="faXmark"></fa-icon>
-              </button>
+          <div formArrayName="products">
+            <div
+              *ngFor="let group of productsArray.controls; let i = index"
+              [formGroupName]="i"
+              class="border rounded-3 p-3 mb-3 bg-light d-flex align-items-center justify-content-between"
+            >
+              <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-primary">{{ i + 1 }}</span>
+                <span class="fw-semibold">{{
+                  getProductName(group.get("productId")?.value)
+                }}</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <input
+                  type="text"
+                  formControlName="count"
+                  min="1"
+                  class="form-control form-control-sm text-center"
+                  placeholder="Số lượng"
+                  style="width: 80px"
+                  mask="separator"
+                />
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  type="button"
+                  (click)="removeProduct(i)"
+                  *ngIf="productsArray.length > 1"
+                  title="Xóa sản phẩm"
+                >
+                  <fa-icon [icon]="faXmark"></fa-icon>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="mb-3">
-          <label for="totalAmount" class="form-label fw-semibold">
-            <fa-icon
-              [icon]="faMoneyBillWave"
-              class="me-1 text-success"
-            ></fa-icon
-            >Tổng tiền
-          </label>
-          <input
-            type="text"
-            id="totalAmount"
-            name="totalAmount"
-            class="form-control fw-bold text-success shadow-none"
-            formControlName="totalAmount"
-            readonly
-            mask="separator.0"
-            thousandSeparator="."
-          />
-        </div>
+          <div class="mb-3">
+            <label for="totalAmount" class="form-label fw-semibold">
+              <fa-icon
+                [icon]="faMoneyBillWave"
+                class="me-1 text-success"
+              ></fa-icon
+              >Tổng tiền
+            </label>
+            <input
+              type="text"
+              id="totalAmount"
+              name="totalAmount"
+              class="form-control fw-bold text-success shadow-none"
+              formControlName="totalAmount"
+              readonly
+              mask="separator.0"
+              thousandSeparator="."
+            />
+          </div>
 
-        <div class="d-flex justify-content-end gap-2 mt-4">
-          <button
-            class="btn btn-outline-secondary px-4"
-            type="button"
-            (click)="closed.emit()"
-          >
-            Đóng
-          </button>
-          <button
-            class="btn btn-success px-4 fw-semibold d-flex align-items-center justify-content-center"
-            type="submit"
-            [disabled]="orderForm.invalid || isLoading"
-          >
-            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            Cập nhật
-          </button>
-        </div>
-      </form>
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button
+              class="btn btn-outline-secondary px-4"
+              type="button"
+              (click)="close()"
+            >
+              Đóng
+            </button>
+            <button
+              class="btn btn-success px-4 fw-semibold d-flex align-items-center justify-content-center"
+              type="submit"
+              [disabled]="orderForm.invalid || isLoading"
+            >
+              <span
+                *ngIf="isLoading"
+                class="spinner-border spinner-border-sm me-2"
+                role="status"
+                aria-hidden="true"
+              ></span>
+              Cập nhật Đơn Hàng
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
