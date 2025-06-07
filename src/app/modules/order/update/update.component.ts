@@ -119,7 +119,7 @@ export class UpdateComponent implements OnInit {
       const { productId, count } = group.value;
       const product = this.products.find((p) => p.productId === productId);
       if (product) {
-        total += count * (product?.retailPrice ?? 0);
+        total += count * product?.retailPrice;
       }
     }
     this.orderForm.get('totalAmount')?.setValue(total);
@@ -169,6 +169,7 @@ export class UpdateComponent implements OnInit {
           name: data.name,
           phoneNumber: data.phoneNumber?.replace(/^0/, ''),
           email: data.email,
+          totalAmount: data.totalAmount,
         });
         this.productsArray.clear();
         for (let item of data.products) {
@@ -176,7 +177,6 @@ export class UpdateComponent implements OnInit {
             this.createProductGroup(item.productId, item.count)
           );
         }
-        this.calculateTotalAmount();
       },
       error: (err) => console.error('Lỗi khi lấy đơn hàng', err),
     });
@@ -184,8 +184,6 @@ export class UpdateComponent implements OnInit {
 
   close() {
     this.closed.emit();
-    this.orderForm.reset();
-    this.productsArray.clear();
     this.isLoading = false;
   }
 

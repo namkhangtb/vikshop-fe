@@ -169,7 +169,6 @@ export class UpdateComponent {
 
   close(): void {
     this.closed.emit();
-    this.productForm.reset();
     this.isLoading = false;
   }
 }
