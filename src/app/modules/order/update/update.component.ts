@@ -23,6 +23,9 @@ import {
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { NgxMaskDirective } from 'ngx-mask';
+import { ProductService } from '../../product/product.service';
+import { ProductModule } from '../../product/product.module';
+import { Product } from '../../product/types';
 
 @Component({
   selector: 'app-update',
@@ -35,19 +38,21 @@ import { NgxMaskDirective } from 'ngx-mask';
     FontAwesomeModule,
     ToastrModule,
     NgxMaskDirective,
+    ProductModule,
   ],
   templateUrl: './update.component.html',
   styleUrl: './update.component.scss',
 })
 export class UpdateComponent implements OnInit {
-  @Input() orderId: string = '';
+  @Input() orderId!: string;
   @Output() updated = new EventEmitter<void>();
   @Output() closed = new EventEmitter<void>();
 
   constructor(
     private orderService: OrderService,
     private fb: FormBuilder,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private productService: ProductService
   ) {}
 
   orderForm = this.fb.group({
@@ -61,7 +66,8 @@ export class UpdateComponent implements OnInit {
     totalAmount: [{ value: 0, disabled: true }, Validators.required],
   });
 
-  products: any[] = [];
+  _id: string = '';
+  products: Product[] = [];
   isLoading = false;
 
   faCartShopping = faCartShopping;
@@ -75,7 +81,9 @@ export class UpdateComponent implements OnInit {
   selectedProductControl = new FormControl(null);
 
   ngOnInit() {
+    this._id = this.orderId || '';
     this.fetchProducts();
+    this.fetchDataForm();
   }
 
   get productsArray(): FormArray {
@@ -111,14 +119,14 @@ export class UpdateComponent implements OnInit {
       const { productId, count } = group.value;
       const product = this.products.find((p) => p.productId === productId);
       if (product) {
-        total += count * product.price;
+        total += count * (product?.retailPrice ?? 0);
       }
     }
     this.orderForm.get('totalAmount')?.setValue(total);
   }
 
   onSubmit() {
-    if (this.orderForm.invalid || !this.orderId) return;
+    if (this.orderForm.invalid || !this._id) return;
     this.isLoading = true;
     const formValue = this.orderForm.getRawValue();
     const formData = {
@@ -128,7 +136,7 @@ export class UpdateComponent implements OnInit {
       products: formValue.products,
       totalAmount: formValue.totalAmount,
     };
-    this.orderService.updateOrder(formData, this.orderId).subscribe({
+    this.orderService.updateOrder(formData, this._id).subscribe({
       next: () => {
         this.toastr.success('Cập nhật đơn hàng thành công!');
         this.updated.emit();
@@ -145,18 +153,17 @@ export class UpdateComponent implements OnInit {
   }
 
   fetchProducts() {
-    this.orderService.getProducts().subscribe({
-      next: (data) => {
-        this.products = data;
-        this.fetchDataForm();
+    this.productService.getProducts({ limit: -1 }).subscribe({
+      next: (res) => {
+        this.products = res.data;
       },
       error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
     });
   }
 
   fetchDataForm() {
-    if (!this.orderId) return;
-    this.orderService.getOrder(this.orderId).subscribe({
+    if (!this._id) return;
+    this.orderService.getOrder(this._id).subscribe({
       next: (data: any) => {
         this.orderForm.patchValue({
           name: data.name,
@@ -178,9 +185,7 @@ export class UpdateComponent implements OnInit {
   close() {
     this.closed.emit();
     this.orderForm.reset();
-    while (this.productsArray.length > 0) {
-      this.productsArray.removeAt(0);
-    }
+    this.productsArray.clear();
     this.isLoading = false;
   }
 

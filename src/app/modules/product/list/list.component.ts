@@ -1,6 +1,5 @@
-import { Component, ViewChild, TemplateRef } from '@angular/core';
+import { Component, TemplateRef } from '@angular/core';
 import { ProductService } from '../product.service';
-import { Router } from '@angular/router';
 import { Product } from '../types';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
@@ -14,11 +13,20 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastrService } from 'ngx-toastr';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-list',
   standalone: true,
-  imports: [CommonModule, CreateComponent, UpdateComponent, FontAwesomeModule],
+  imports: [
+    CommonModule,
+    CreateComponent,
+    UpdateComponent,
+    FontAwesomeModule,
+    PaginationModule,
+    FormsModule,
+  ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss',
 })
@@ -35,9 +43,12 @@ export class ListComponent {
   faPenToSquare = faPenToSquare;
   faTrash = faTrash;
 
+  page = 1;
+  pageSize = 10;
+  totalItems = 0;
+
   constructor(
     private productService: ProductService,
-    private router: Router,
     private modalService: BsModalService,
     private toastr: ToastrService
   ) {}
@@ -46,30 +57,25 @@ export class ListComponent {
     this.fetchProducts();
   }
 
-  goToEditProduct(item: any) {
-    this.router.navigate([`/product/update/${item._id}`]);
+  fetchProducts() {
+    this.productService
+      .getProducts({ page: this.page, limit: this.pageSize })
+      .subscribe({
+        next: (res) => {
+          this.items = res.data;
+          this.totalItems = res.meta.pagination.totalItems;
+        },
+        error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
+      });
+  }
+
+  pageChanged(event: any) {
+    this.page = event.page;
+    this.fetchProducts();
   }
 
   openAddProductModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template);
-  }
-  openUpdateProductModal(template: TemplateRef<any>, item: any) {
-    this.selectedProduct = item;
-    this.modalRef = this.modalService.show(template);
-  }
-  openDeleteModal(template: TemplateRef<any>, item: any) {
-    this.selectedProduct = item;
-    this.modalRef = this.modalService.show(template);
-  }
-  closeDeleteModal(event: any) {
-    this.isOpenDeleteModal = event;
-  }
-
-  handleDeleted(success: boolean) {
-    this.isOpenDeleteModal = false;
-    if (success) {
-      this.fetchProducts();
-    }
   }
 
   onProductAdded() {
@@ -77,9 +83,19 @@ export class ListComponent {
     this.modalRef?.hide();
   }
 
+  openUpdateProductModal(template: TemplateRef<any>, item: any) {
+    this.selectedProduct = item;
+    this.modalRef = this.modalService.show(template);
+  }
+
   onProductUpdated() {
     this.fetchProducts();
     this.modalRef?.hide();
+  }
+
+  openDeleteModal(template: TemplateRef<any>, item: any) {
+    this.selectedProduct = item;
+    this.modalRef = this.modalService.show(template);
   }
 
   confirmDeleteProduct() {
@@ -94,15 +110,6 @@ export class ListComponent {
         this.modalRef?.hide();
         this.toastr.error('Xóa sản phẩm thất bại!');
       },
-    });
-  }
-
-  fetchProducts() {
-    this.productService.getProducts().subscribe({
-      next: (data) => {
-        this.items = data;
-      },
-      error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
     });
   }
 }

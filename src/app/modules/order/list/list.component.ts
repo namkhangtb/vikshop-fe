@@ -1,5 +1,5 @@
 import { Component, TemplateRef } from '@angular/core';
-import { Order, OrderService } from '../order.service';
+import { OrderService } from '../order.service';
 import { CommonModule } from '@angular/common';
 import {
   faPenToSquare,
@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { CreateComponent } from '../create/create.component';
 import { UpdateComponent } from '../update/update.component';
 import { ToastrService } from 'ngx-toastr';
+import { Order } from '../types';
 
 @Component({
   selector: 'app-list',
@@ -43,18 +44,29 @@ export class ListComponent {
   selectedOrder: Order = {} as Order;
 
   items: Order[] = [];
+  page = 1;
+  pageSize = 10;
+  totalItems = 0;
 
   ngOnInit() {
     this.fetchOrders();
   }
 
   fetchOrders() {
-    this.orderService.getOrders().subscribe({
-      next: (data) => {
-        this.items = data;
-      },
-      error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
-    });
+    this.orderService
+      .getOrders({ page: this.page, limit: this.pageSize })
+      .subscribe({
+        next: (res) => {
+          this.items = res.data;
+          this.totalItems = res.meta.pagination.totalItems;
+        },
+        error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
+      });
+  }
+
+  pageChanged(event: any) {
+    this.page = event.page;
+    this.fetchOrders();
   }
 
   openAddOrderModal(template: TemplateRef<any>) {

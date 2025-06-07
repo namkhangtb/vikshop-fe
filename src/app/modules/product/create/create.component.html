@@ -231,6 +231,7 @@
             <button
               type="submit"
               class="btn btn-success px-4 fw-semibold d-flex align-items-center justify-content-center"
+              [disabled]="productForm.invalid || isLoading"
             >
               <span
                 *ngIf="isLoading"

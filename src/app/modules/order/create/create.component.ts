@@ -23,6 +23,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { FormControl } from '@angular/forms';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
+import { ProductModule } from '../../product/product.module';
+import { ProductService } from '../../product/product.service';
 
 @Component({
   selector: 'app-create',
@@ -34,7 +36,8 @@ import { ToastrModule, ToastrService } from 'ngx-toastr';
     NgSelectModule,
     FontAwesomeModule,
     NgxMaskDirective,
-    ToastrModule
+    ToastrModule,
+    ProductModule,
   ],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',
@@ -46,6 +49,7 @@ export class CreateComponent {
 
   constructor(
     private orderService: OrderService,
+    private productService: ProductService,
     private fb: FormBuilder,
     private toastr: ToastrService
   ) {}
@@ -111,7 +115,7 @@ export class CreateComponent {
       const { productId, count } = group.value;
       const product = this.products.find((p) => p.productId === productId);
       if (product) {
-        total += count * product.price;
+        total += count * product.retailPrice;
       }
     }
     this.orderForm.get('totalAmount')?.setValue(total);
@@ -145,9 +149,9 @@ export class CreateComponent {
   }
 
   fetchProducts() {
-    this.orderService.getProducts().subscribe({
-      next: (data) => {
-        this.products = data;
+    this.productService.getProducts({ limit: -1 }).subscribe({
+      next: (res) => {
+        this.products = res.data;
       },
       error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
     });

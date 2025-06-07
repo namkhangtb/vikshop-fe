@@ -110,6 +110,20 @@
       </tbody>
     </table>
   </div>
+  <div class="d-flex justify-content-end mt-3">
+    <pagination
+      [boundaryLinks]="true"
+      [totalItems]="totalItems"
+      [(ngModel)]="page"
+      [itemsPerPage]="pageSize"
+      (pageChanged)="pageChanged($event)"
+      previousText="&lsaquo;"
+      nextText="&rsaquo;"
+      firstText="&laquo;"
+      lastText="&raquo;"
+    >
+    </pagination>
+  </div>
 </div>
 
 <ng-template #templateModalAddProduct>

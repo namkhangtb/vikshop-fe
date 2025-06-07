@@ -30,7 +30,7 @@ import { ToastrService } from 'ngx-toastr';
   styleUrl: './update.component.scss',
 })
 export class UpdateComponent {
-  @Input() productId: string = '';
+  @Input() productId!: string;
   @Output() updated = new EventEmitter<void>();
   @Output() closed = new EventEmitter<void>();
 

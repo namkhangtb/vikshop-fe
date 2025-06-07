@@ -1,7 +1,7 @@
 export class Product {
   productId?: string;
   name!: string;
-  retailPrice?: number;
+  retailPrice!: number;
   importPrice?: number;
   wholesalePrice?: number;
   livestreamPrice?: number;
