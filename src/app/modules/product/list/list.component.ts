@@ -48,6 +48,7 @@ export class ListComponent {
   page = 1;
   pageSize = 10;
   totalItems = 0;
+  searchText: string = '';
 
   constructor(
     private productService: ProductService,
@@ -61,7 +62,11 @@ export class ListComponent {
 
   fetchProducts() {
     this.productService
-      .getProducts({ page: this.page, limit: this.pageSize })
+      .getProducts({
+        page: this.page,
+        limit: this.pageSize,
+        keyword: this.searchText,
+      })
       .subscribe({
         next: (res) => {
           this.items = res.data;
@@ -69,6 +74,10 @@ export class ListComponent {
         },
         error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
       });
+  }
+
+  onSearchChange() {
+    this.fetchProducts();
   }
 
   pageChanged(event: any) {

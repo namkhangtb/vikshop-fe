@@ -27,7 +27,7 @@ import { DeleteModalComponent } from '@shared/components';
     CreateComponent,
     UpdateComponent,
     DeleteModalComponent,
-],
+  ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss',
 })
@@ -49,6 +49,7 @@ export class ListComponent {
   page = 1;
   pageSize = 10;
   totalItems = 0;
+  searchText: string = '';
 
   ngOnInit() {
     this.fetchOrders();
@@ -56,7 +57,7 @@ export class ListComponent {
 
   fetchOrders() {
     this.orderService
-      .getOrders({ page: this.page, limit: this.pageSize })
+      .getOrders({ page: this.page, limit: this.pageSize, keyword: this.searchText})
       .subscribe({
         next: (res) => {
           this.items = res.data;
@@ -64,6 +65,10 @@ export class ListComponent {
         },
         error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
       });
+  }
+
+  onSearchChange() {
+    this.fetchOrders();
   }
 
   pageChanged(event: any) {
