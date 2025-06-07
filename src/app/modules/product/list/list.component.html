@@ -142,24 +142,10 @@
 </ng-template>
 
 <ng-template #templateModalDeleteProduct>
-  <div class="modal-header bg-danger text-white">
-    <h3 class="modal-title">
-      <fa-icon [icon]="faTrash"></fa-icon> Xác nhận xóa sản phẩm
-    </h3>
-    <button
-      type="button"
-      class="btn-close btn-close-white"
-      aria-label="Close"
-      (click)="modalRef?.hide()"
-    ></button>
-  </div>
-  <div class="modal-body">
-    <p>Bạn có chắc chắn muốn xóa sản phẩm này không?</p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-secondary" (click)="modalRef?.hide()">Hủy</button>
-    <button class="btn btn-danger" (click)="confirmDeleteProduct()">
-      <i class="bi bi-trash"></i> Xóa
-    </button>
-  </div>
+  <app-delete-modal
+    [title]="'Xóa sản phẩm'"
+    [message]="'Bạn có chắc chắn muốn xóa sản phẩm này?'"
+    (cancel)="cancelDeleteProduct()"
+    (confirm)="confirmDeleteProduct()"
+  ></app-delete-modal>
 </ng-template>

@@ -73,7 +73,8 @@
       previousText="&lsaquo;"
       nextText="&rsaquo;"
       firstText="&laquo;"
-      lastText="&raquo;">
+      lastText="&raquo;"
+    >
     </pagination>
   </div>
 </div>
@@ -91,24 +92,10 @@
 </ng-template>
 
 <ng-template #templateModalDeleteOrder>
-  <div class="modal-header bg-danger text-white">
-    <h3 class="modal-title">
-      <fa-icon [icon]="faTrash"></fa-icon> Xác nhận xóa đơn hàng
-    </h3>
-    <button
-      type="button"
-      class="btn-close btn-close-white"
-      aria-label="Close"
-      (click)="modalRef?.hide()"
-    ></button>
-  </div>
-  <div class="modal-body">
-    <p>Bạn có chắc chắn muốn xóa đơn hàng này không?</p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-secondary" (click)="modalRef?.hide()">Hủy</button>
-    <button class="btn btn-danger" (click)="confirmDeleteOrder()">
-      <fa-icon [icon]="faTrash"></fa-icon> Xóa
-    </button>
-  </div>
+  <app-delete-modal
+    [title]="'Xác nhận xóa đơn hàng'"
+    [message]="'Bạn có chắc chắn muốn xóa đơn hàng này không?'"
+    (cancel)="cancelDeleteOrder()"
+    (confirm)="confirmDeleteOrder()"
+  ></app-delete-modal>
 </ng-template>

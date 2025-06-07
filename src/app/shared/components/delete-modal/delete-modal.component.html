@@ -1,0 +1,16 @@
+<div class="modal-header bg-danger text-white">
+  <h3 class="modal-title"><fa-icon [icon]="faTrash"></fa-icon> {{ title }}</h3>
+  <button
+    type="button"
+    class="btn-close btn-close-white"
+    aria-label="Close"
+    (click)="onCancel()"
+  ></button>
+</div>
+<div class="modal-body">
+  <p>{{ message }}</p>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-secondary" (click)="onCancel()">Hủy</button>
+  <button class="btn btn-danger" (click)="onConfirm()">Xóa</button>
+</div>

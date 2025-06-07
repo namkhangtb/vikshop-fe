@@ -15,6 +15,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastrService } from 'ngx-toastr';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { FormsModule } from '@angular/forms';
+import { DeleteModalComponent } from '@shared/components';
 
 @Component({
   selector: 'app-list',
@@ -26,6 +27,7 @@ import { FormsModule } from '@angular/forms';
     FontAwesomeModule,
     PaginationModule,
     FormsModule,
+    DeleteModalComponent,
   ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss',
@@ -96,6 +98,10 @@ export class ListComponent {
   openDeleteModal(template: TemplateRef<any>, item: any) {
     this.selectedProduct = item;
     this.modalRef = this.modalService.show(template);
+  }
+
+  cancelDeleteProduct() {
+    this.modalRef?.hide();
   }
 
   confirmDeleteProduct() {

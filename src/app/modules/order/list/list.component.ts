@@ -14,6 +14,7 @@ import { CreateComponent } from '../create/create.component';
 import { UpdateComponent } from '../update/update.component';
 import { ToastrService } from 'ngx-toastr';
 import { Order } from '../types';
+import { DeleteModalComponent } from '@shared/components';
 
 @Component({
   selector: 'app-list',
@@ -25,7 +26,8 @@ import { Order } from '../types';
     FormsModule,
     CreateComponent,
     UpdateComponent,
-  ],
+    DeleteModalComponent,
+],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss',
 })
@@ -93,7 +95,13 @@ export class ListComponent {
     this.modalRef = this.modalService.show(template);
   }
 
+  cancelDeleteOrder() {
+    this.modalRef?.hide();
+  }
+
   confirmDeleteOrder() {
+    console.log('Xác nhận xóa đơn hàng', this.selectedOrder);
+
     if (!this.selectedOrder?._id) return;
     this.orderService.deleteOrder(this.selectedOrder._id).subscribe({
       next: () => {
