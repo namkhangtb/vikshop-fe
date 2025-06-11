@@ -132,8 +132,8 @@ export class CreateComponent {
         }
       },
       error: (err) => {
+        this.toastr.error(`Tạo sản phẩm thất bại: ${err.error.message}`);
         console.error('Tạo thất bại', err);
-        this.toastr.error('Tạo sản phẩm thất bại');
         this.close();
         this.isLoading = false;
       },

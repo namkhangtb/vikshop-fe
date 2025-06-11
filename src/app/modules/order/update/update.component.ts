@@ -160,7 +160,7 @@ export class UpdateComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.toastr.error('Cập nhật đơn hàng thất bại: ');
+        this.toastr.error(`Cập nhật đơn hàng thất bại: ${err.error.message}`);
         console.error('Lỗi khi cập nhật đơn hàng', err);
         this.close();
         this.isLoading = false;

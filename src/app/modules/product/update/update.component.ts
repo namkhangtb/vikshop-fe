@@ -85,9 +85,13 @@ export class UpdateComponent {
               this.toastr.success('Cập nhật sản phẩm thành công');
             }
           },
-          error: () => {
-            this.isLoading = false;
+          error: (err) => {
+            this.toastr.error(
+              `Cập nhật sản phẩm thất bại: ${err.error.message}`
+            );
             this.toastr.error('Cập nhật sản phẩm thất bại');
+            this.close();
+            this.isLoading = false;
           },
         });
     }
@@ -165,6 +169,9 @@ export class UpdateComponent {
           this.isLoading = false;
         },
         error: (err) => {
+          this.toastr.error(
+            `Lỗi lấy ra dữ liệu sản phẩm: ${err.error.message}`
+          );
           this.isLoading = false;
           console.error('Lỗi khi lấy sản phẩm', err);
         },
