@@ -32,7 +32,6 @@ import { ToastrService } from 'ngx-toastr';
   providers: [provideNgxMask()],
 })
 export class CreateComponent {
-  @Input() productId: string = '';
   @Output() added = new EventEmitter<void>();
   @Output() closed = new EventEmitter<void>();
 
@@ -49,7 +48,7 @@ export class CreateComponent {
   ) {}
 
   productForm = this.fb.group({
-    productId: [''],
+    productCode: [''],
     name: ['', Validators.required],
     retailPrice: [0, [Validators.min(0)]],
     importPrice: [0, [Validators.min(0)]],
@@ -121,11 +120,16 @@ export class CreateComponent {
     }
     this.isLoading = true;
     this.productService.createProduct(this.productForm.value).subscribe({
-      next: () => {
-        this.toastr.success('Tạo sản phẩm thành công');
-        this.added.emit();
-        this.close();
-        this.isLoading = false;
+      next: (res) => {
+        if (res.statusText === 'ERROR') {
+          this.toastr.error(`Lỗi: ${res.message}`);
+          this.isLoading = false;
+        } else {
+          this.toastr.success('Tạo sản phẩm thành công');
+          this.added.emit();
+          this.close();
+          this.isLoading = false;
+        }
       },
       error: (err) => {
         console.error('Tạo thất bại', err);

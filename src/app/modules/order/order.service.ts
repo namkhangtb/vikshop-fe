@@ -2,7 +2,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ApiPaginateResponse } from '../../common/http/types';
+import {
+  ApiBaseResponse,
+  ApiItemResponse,
+  ApiPaginateResponse,
+} from '../../common/http/types';
 import { Order } from './types';
 
 @Injectable({
@@ -19,19 +23,24 @@ export class OrderService {
     });
   }
 
-  getOrder(id: string): Observable<Order> {
-    return this.http.get<Order>(`${this.apiUrl}/order/${id}`);
+  getOrder(id: string): Observable<ApiItemResponse<Order>> {
+    return this.http.get<ApiItemResponse<Order>>(`${this.apiUrl}/order/${id}`);
   }
 
-  createOrder(body: any): Observable<Order> {
-    return this.http.post<Order>(`${this.apiUrl}/order`, body);
+  createOrder(body: any): Observable<ApiItemResponse<Order>> {
+    return this.http.post<ApiItemResponse<Order>>(`${this.apiUrl}/order`, body);
   }
 
-  updateOrder(body: any, id: string): Observable<Order> {
-    return this.http.put<Order>(`${this.apiUrl}/order/${id}`, body);
+  updateOrder(body: any, id: string): Observable<ApiItemResponse<Order>> {
+    return this.http.put<ApiItemResponse<Order>>(
+      `${this.apiUrl}/order/${id}`,
+      body
+    );
   }
 
-  deleteOrder(id: string): Observable<Order> {
-    return this.http.delete<Order>(`${this.apiUrl}/order/${id}`);
+  deleteOrder(id: string): Observable<ApiBaseResponse<Order>> {
+    return this.http.delete<ApiBaseResponse<Order>>(
+      `${this.apiUrl}/order/${id}`
+    );
   }
 }

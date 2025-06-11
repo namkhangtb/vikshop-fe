@@ -12,10 +12,10 @@
         />
       </div>
       <a
-        class="btn btn-primary mb-3"
+        class="btn btn-primary mb-3 d-inline-flex align-items-center"
         (click)="openAddOrderModal(templateModalAddOrder)"
       >
-        <fa-icon [icon]="faPlus"></fa-icon> Thêm
+        <fa-icon [icon]="faPlus" class="me-1"></fa-icon> Thêm
       </a>
     </div>
   </div>
@@ -34,7 +34,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of items; let i = index">
-          <th scope="row">{{ i + 1 }}</th>
+          <th scope="row">{{ (page - 1) * pageSize + i + 1 }}</th>
           <td>{{ item.name }}</td>
           <td>{{ item.phoneNumber }}</td>
           <td>{{ item.email }}</td>
@@ -95,7 +95,7 @@
 
 <ng-template #templateModalUpdateOrder>
   <app-update
-    [orderId]="selectedOrder._id || ''"
+    [orderId]="selectedOrder.id || ''"
     (updated)="onOrderUpdated()"
     (closed)="modalRef?.hide()"
   ></app-update>

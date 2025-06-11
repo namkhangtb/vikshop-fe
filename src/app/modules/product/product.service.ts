@@ -3,7 +3,11 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Product } from './types';
 import { environment } from '../../../environments/environment';
-import { ApiPaginateResponse } from '../../common/http/types';
+import {
+  ApiBaseResponse,
+  ApiItemResponse,
+  ApiPaginateResponse,
+} from '../../common/http/types';
 
 @Injectable({
   providedIn: 'root',
@@ -22,19 +26,29 @@ export class ProductService {
     );
   }
 
-  getProduct(id: string): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/product/${id}`);
+  getProduct(id: string): Observable<ApiItemResponse<Product>> {
+    return this.http.get<ApiItemResponse<Product>>(
+      `${this.apiUrl}/product/${id}`
+    );
   }
 
-  createProduct(body: any): Observable<Product> {
-    return this.http.post<Product>(`${this.apiUrl}/product`, body);
+  createProduct(body: any): Observable<ApiItemResponse<Product>> {
+    return this.http.post<ApiItemResponse<Product>>(
+      `${this.apiUrl}/product`,
+      body
+    );
   }
 
-  updateProduct(body: any, id: string): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrl}/product/${id}`, body);
+  updateProduct(body: any, id: string): Observable<ApiItemResponse<Product>> {
+    return this.http.put<ApiItemResponse<Product>>(
+      `${this.apiUrl}/product/${id}`,
+      body
+    );
   }
 
-  deleteProduct(id: string): Observable<Product> {
-    return this.http.delete<Product>(`${this.apiUrl}/product/${id}`);
+  deleteProduct(id: string): Observable<ApiBaseResponse<Product>> {
+    return this.http.delete<ApiBaseResponse<Product>>(
+      `${this.apiUrl}/product/${id}`
+    );
   }
 }

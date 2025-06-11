@@ -26,6 +26,7 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { ProductService } from '../../product/product.service';
 import { ProductModule } from '../../product/product.module';
 import { Product } from '../../product/types';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-update',
@@ -57,16 +58,19 @@ export class UpdateComponent implements OnInit {
 
   orderForm = this.fb.group({
     name: ['', Validators.required],
-    phoneNumber: [
+    phoneNumber: ['', [Validators.required, Validators.pattern(/^0[0-9]{9}$/)]],
+    email: [
       '',
-      [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)],
+      [
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z0-9._%+-]+@gmail\.com$/),
+      ],
     ],
-    email: ['', [Validators.required, Validators.email]],
     products: this.fb.array([]),
     totalAmount: [{ value: 0, disabled: true }, Validators.required],
   });
 
-  _id: string = '';
+  id: string = '';
   products: Product[] = [];
   isLoading = false;
 
@@ -80,8 +84,16 @@ export class UpdateComponent implements OnInit {
 
   selectedProductControl = new FormControl(null);
 
+  page = 1;
+  pageSize = 10;
+  loading = false;
+  hasMore = true;
+  currentSearch = '';
+
+  urlImage: string = environment.apiUrl + '/uploads/';
+
   ngOnInit() {
-    this._id = this.orderId || '';
+    this.id = this.orderId || '';
     this.fetchProducts();
     this.fetchDataForm();
   }
@@ -99,10 +111,9 @@ export class UpdateComponent implements OnInit {
     return group;
   }
 
-  addProduct() {
-    const productId = this.selectedProductControl.value;
-    if (productId) {
-      this.productsArray.push(this.createProductGroup(productId, 1));
+  addProduct(product: any) {
+    if (product) {
+      this.productsArray.push(this.createProductGroup(product.id, 1));
       this.selectedProductControl.reset();
       this.calculateTotalAmount();
     }
@@ -117,7 +128,7 @@ export class UpdateComponent implements OnInit {
     let total = 0;
     for (const group of this.productsArray.controls) {
       const { productId, count } = group.value;
-      const product = this.products.find((p) => p.productId === productId);
+      const product = this.products.find((p) => p.id === productId);
       if (product) {
         total += count * product?.retailPrice;
       }
@@ -126,25 +137,30 @@ export class UpdateComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.orderForm.invalid || !this._id) return;
+    if (this.orderForm.invalid || !this.id) return;
     this.isLoading = true;
     const formValue = this.orderForm.getRawValue();
     const formData = {
       name: formValue.name,
-      phoneNumber: '0' + formValue.phoneNumber,
+      phoneNumber: formValue.phoneNumber,
       email: formValue.email,
       products: formValue.products,
       totalAmount: formValue.totalAmount,
     };
-    this.orderService.updateOrder(formData, this._id).subscribe({
-      next: () => {
-        this.toastr.success('Cập nhật đơn hàng thành công!');
-        this.updated.emit();
-        this.close();
-        this.isLoading = false;
+    this.orderService.updateOrder(formData, this.id).subscribe({
+      next: (res) => {
+        if (res.statusText === 'ERROR') {
+          this.toastr.error(`Lỗi: ${res.message}`);
+          this.isLoading = false;
+        } else {
+          this.toastr.success('Cập nhật đơn hàng thành công!');
+          this.updated.emit();
+          this.close();
+          this.isLoading = false;
+        }
       },
       error: (err) => {
-        this.toastr.error('Cập nhật đơn hàng thất bại!');
+        this.toastr.error('Cập nhật đơn hàng thất bại: ');
         console.error('Lỗi khi cập nhật đơn hàng', err);
         this.close();
         this.isLoading = false;
@@ -153,26 +169,37 @@ export class UpdateComponent implements OnInit {
   }
 
   fetchProducts() {
-    this.productService.getProducts({ limit: -1 }).subscribe({
-      next: (res) => {
-        this.products = res.data;
-      },
-      error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
-    });
+    if (this.loading || !this.hasMore) return;
+    this.loading = true;
+    this.productService
+      .getProducts({
+        keyword: this.currentSearch,
+        page: this.page,
+        limit: this.pageSize,
+      })
+      .subscribe({
+        next: (res) => {
+          this.products = [...this.products, ...res.data];
+          this.hasMore = res.data.length === this.pageSize;
+          this.loading = false;
+          this.page++;
+        },
+        error: (err) => console.error('Lỗi khi lấy dữ liệu sản phẩm', err),
+      });
   }
 
   fetchDataForm() {
-    if (!this._id) return;
-    this.orderService.getOrder(this._id).subscribe({
-      next: (data: any) => {
+    if (!this.id) return;
+    this.orderService.getOrder(this.id).subscribe({
+      next: (res: any) => {
         this.orderForm.patchValue({
-          name: data.name,
-          phoneNumber: data.phoneNumber?.replace(/^0/, ''),
-          email: data.email,
-          totalAmount: data.totalAmount,
+          name: res.data.name,
+          phoneNumber: res.data.phoneNumber,
+          email: res.data.email,
+          totalAmount: res.data.totalAmount,
         });
         this.productsArray.clear();
-        for (let item of data.products) {
+        for (let item of res.data.products) {
           this.productsArray.push(
             this.createProductGroup(item.productId, item.count)
           );
@@ -188,7 +215,16 @@ export class UpdateComponent implements OnInit {
   }
 
   getProductName(productId: string): string {
-    const product = this.products.find((p) => p.productId === productId);
+    const product = this.products.find((p) => p.id === productId);
     return product ? product.name : '';
+  }
+
+  getProductImage(productId: string): string | null {
+    const product = this.products.find((p) => p.id === productId);
+    return product ? product.images?.[0] ?? null : null;
+  }
+
+  loadMoreProduct() {
+    this.fetchProducts();
   }
 }

@@ -1,5 +1,6 @@
 export class Product {
-  productId?: string;
+  id!: string;
+  productCode?: string;
   name!: string;
   retailPrice!: number;
   importPrice?: number;
@@ -12,6 +13,4 @@ export class Product {
   shortDescription?: string;
   images?: string[];
   stock?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
 }

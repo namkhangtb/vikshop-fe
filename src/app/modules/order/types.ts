@@ -3,7 +3,7 @@ export class ProductItem {
   count!: number;
 }
 export class Order {
-  _id!: string;
+  id!: string;
   name!: string;
   phoneNumber!: string;
   email!: string;

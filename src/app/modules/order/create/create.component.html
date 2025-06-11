@@ -99,23 +99,13 @@
               bindValue="productId"
               placeholder="Tìm kiếm và chọn sản phẩm"
               [searchable]="true"
-              [clearable]="false"
+              [clearable]="true"
               class="w-100"
               [formControl]="selectedProductControl"
+              (scrollToEnd)="loadMoreProduct()"
+              (change)="addProduct($event)"
             >
             </ng-select>
-            <button
-              class="btn btn-outline-primary fw-semibold ms-2"
-              type="button"
-              (click)="addProduct()"
-              [disabled]="!selectedProductControl.value"
-              [ngClass]="{
-                'opacity-50': !selectedProductControl.value,
-                'pointer-events-none': !selectedProductControl.value
-              }"
-            >
-              Thêm
-            </button>
           </div>
 
           <div formArrayName="products">
@@ -126,6 +116,18 @@
             >
               <div class="d-flex align-items-center gap-3">
                 <span class="badge bg-primary">{{ i + 1 }}</span>
+                <img
+                  *ngIf="getProductImage(group.get('productId')?.value)"
+                  [src]="
+                    urlImage + getProductImage(group.get('productId')?.value)
+                  "
+                  alt="Ảnh sản phẩm"
+                  width="50"
+                  height="50"
+                  class="rounded shadow-sm"
+                  style="object-fit: cover"
+                />
+
                 <span class="fw-semibold">{{
                   getProductName(group.get("productId")?.value)
                 }}</span>

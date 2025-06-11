@@ -25,6 +25,7 @@ import { FormControl } from '@angular/forms';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { ProductModule } from '../../product/product.module';
 import { ProductService } from '../../product/product.service';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-create',
@@ -56,12 +57,15 @@ export class CreateComponent {
 
   orderForm = this.fb.group({
     name: ['', Validators.required],
-    phoneNumber: [
+    phoneNumber: ['', [Validators.required, Validators.pattern(/^0[0-9]{9}$/)]],
+    email: [
       '',
-      [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)],
+      [
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z0-9._%+-]+@gmail\.com$/),
+      ],
     ],
-    email: ['', [Validators.required, Validators.email]],
-    products: this.fb.array([]),
+    products: this.fb.array([], Validators.minLength(1)),
     totalAmount: [{ value: 0, disabled: true }, Validators.required],
   });
 
@@ -77,6 +81,14 @@ export class CreateComponent {
 
   selectedProductControl = new FormControl(null);
   isLoading = false;
+
+  page = 1;
+  pageSize = 10;
+  loading = false;
+  hasMore = true;
+  currentSearch = '';
+
+  urlImage: string = environment.apiUrl + '/uploads/';
 
   ngOnInit() {
     this.fetchProducts();
@@ -95,10 +107,9 @@ export class CreateComponent {
     return group;
   }
 
-  addProduct() {
-    const productId = this.selectedProductControl.value;
-    if (productId) {
-      this.productsArray.push(this.createProductGroup(productId, 1));
+  addProduct(product: any) {
+    if (product) {
+      this.productsArray.push(this.createProductGroup(product.id, 1));
       this.selectedProductControl.reset();
       this.calculateTotalAmount();
     }
@@ -113,7 +124,7 @@ export class CreateComponent {
     let total = 0;
     for (const group of this.productsArray.controls) {
       const { productId, count } = group.value;
-      const product = this.products.find((p) => p.productId === productId);
+      const product = this.products.find((p) => p.id === productId);
       if (product) {
         total += count * product.retailPrice;
       }
@@ -127,20 +138,25 @@ export class CreateComponent {
     const formValue = this.orderForm.getRawValue();
     const formData = {
       name: formValue.name,
-      phoneNumber: '0' + formValue.phoneNumber,
+      phoneNumber: formValue.phoneNumber,
       email: formValue.email,
       products: formValue.products,
       totalAmount: formValue.totalAmount,
     };
     this.orderService.createOrder(formData).subscribe({
-      next: () => {
-        this.toastr.success('Tạo đơn hàng thành công!');
-        this.added.emit();
-        this.close();
-        this.isLoading = false;
+      next: (res) => {
+        if (res.statusText === 'ERROR') {
+          this.toastr.error(`Lỗi: ${res.message}`);
+          this.isLoading = false;
+        } else {
+          this.toastr.success('Tạo đơn hàng thành công!');
+          this.added.emit();
+          this.close();
+          this.isLoading = false;
+        }
       },
       error: (err) => {
-        this.toastr.error('Tạo đơn hàng thất bại!');
+        this.toastr.error(`Tạo đơn hàng thất bại: ${err.error.message}`);
         console.error('Lỗi khi đặt hàng', err);
         this.close();
         this.isLoading = false;
@@ -149,12 +165,23 @@ export class CreateComponent {
   }
 
   fetchProducts() {
-    this.productService.getProducts({ limit: -1 }).subscribe({
-      next: (res) => {
-        this.products = res.data;
-      },
-      error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
-    });
+    if (this.loading || !this.hasMore) return;
+    this.loading = true;
+    this.productService
+      .getProducts({
+        keyword: this.currentSearch,
+        page: this.page,
+        limit: this.pageSize,
+      })
+      .subscribe({
+        next: (res) => {
+          this.products = [...this.products, ...res.data];
+          this.hasMore = res.data.length === this.pageSize;
+          this.loading = false;
+          this.page++;
+        },
+        error: (err) => console.error('Lỗi khi lấy dữ liệu sản phẩm', err),
+      });
   }
 
   close() {
@@ -167,7 +194,16 @@ export class CreateComponent {
   }
 
   getProductName(productId: string): string {
-    const product = this.products.find((p) => p.productId === productId);
+    const product = this.products.find((p) => p.id === productId);
     return product ? product.name : '';
+  }
+
+  getProductImage(productId: string): string | null {
+    const product = this.products.find((p) => p.id === productId);
+    return product ? product.images[0] : null;
+  }
+
+  loadMoreProduct() {
+    this.fetchProducts();
   }
 }

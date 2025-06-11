@@ -12,10 +12,10 @@
         />
       </div>
       <a
-        class="btn btn-primary mb-3"
+        class="btn btn-primary mb-3 d-inline-flex align-items-center"
         (click)="openAddProductModal(templateModalAddProduct)"
       >
-        <fa-icon [icon]="faPlus"></fa-icon> Thêm
+        <fa-icon [icon]="faPlus" class="me-1"></fa-icon> Thêm
       </a>
     </div>
   </div>
@@ -37,8 +37,8 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of items; let i = index">
-          <th scope="row">{{ i + 1 }}</th>
-          <td>{{ item.productId }}</td>
+          <th scope="row">{{ (page - 1) * pageSize + i + 1 }}</th>
+          <td>{{ item.productCode }}</td>
           <td>{{ item.name }}</td>
           <td>
             <div class="d-flex flex-wrap gap-1">
@@ -146,7 +146,7 @@
 
 <ng-template #templateModalUpdateProduct>
   <app-update
-    [productId]="selectedProduct._id || ''"
+    [productId]="selectedProduct.id || ''"
     (updated)="onProductUpdated()"
     (closed)="modalRef?.hide()"
   ></app-update>

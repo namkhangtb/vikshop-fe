@@ -61,7 +61,7 @@ export class ListComponent {
       .subscribe({
         next: (res) => {
           this.items = res.data;
-          this.totalItems = res.meta.pagination.totalItems;
+          this.totalItems = res?.meta?.pagination?.totalItems ?? 0;
         },
         error: (err) => console.error('Lỗi khi lấy dữ liệu', err),
       });
@@ -107,8 +107,8 @@ export class ListComponent {
   confirmDeleteOrder() {
     console.log('Xác nhận xóa đơn hàng', this.selectedOrder);
 
-    if (!this.selectedOrder?._id) return;
-    this.orderService.deleteOrder(this.selectedOrder._id).subscribe({
+    if (!this.selectedOrder?.id) return;
+    this.orderService.deleteOrder(this.selectedOrder.id).subscribe({
       next: () => {
         this.fetchOrders();
         this.modalRef?.hide();

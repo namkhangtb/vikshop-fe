@@ -41,12 +41,12 @@ export class UpdateComponent {
     private toastr: ToastrService
   ) {}
 
-  _id: string = '';
+  id: string = '';
   urlImage: string = environment.apiUrl + '/uploads/';
   isLoading = false;
 
   productForm = this.fb.group({
-    productId: [''],
+    productCode: [''],
     name: ['', Validators.required],
     retailPrice: [0, [Validators.min(0)]],
     importPrice: [0, [Validators.min(0)]],
@@ -65,7 +65,7 @@ export class UpdateComponent {
   faFileImage = faFileImage;
 
   ngOnInit(): void {
-    this._id = this.productId || '';
+    this.id = this.productId || '';
     this.fetchDataForm();
   }
 
@@ -73,12 +73,17 @@ export class UpdateComponent {
     if (this.productForm.valid) {
       this.isLoading = true;
       this.productService
-        .updateProduct(this.productForm.value, this._id)
+        .updateProduct(this.productForm.value, this.id)
         .subscribe({
-          next: () => {
-            this.isLoading = false;
-            this.updated.emit();
-            this.toastr.success('Cập nhật sản phẩm thành công');
+          next: (res) => {
+            if (res.statusText == 'ERROR') {
+              this.toastr.error(`Lỗi: ${res.message}`);
+              this.isLoading = false;
+            } else {
+              this.isLoading = false;
+              this.updated.emit();
+              this.toastr.success('Cập nhật sản phẩm thành công');
+            }
           },
           error: () => {
             this.isLoading = false;
@@ -94,7 +99,7 @@ export class UpdateComponent {
     const currentImages: string[] = this.productForm.get('images')?.value || [];
 
     if (currentImages.length + files.length > 9) {
-      alert('Chỉ được tải lên tối đa 9 ảnh');
+      this.toastr.error('Chỉ được tải lên 9 ảnh');
       return;
     }
 
@@ -139,23 +144,23 @@ export class UpdateComponent {
   }
 
   fetchDataForm() {
-    if (this._id) {
+    if (this.id) {
       this.isLoading = true;
-      this.productService.getProduct(this._id).subscribe({
-        next: (data) => {
+      this.productService.getProduct(this.id).subscribe({
+        next: (res) => {
           this.productForm.patchValue({
-            name: data.name,
-            productId: data.productId,
-            barcode: data.barcode,
-            weight: data.weight,
-            shortDescription: data.shortDescription,
-            retailPrice: data.retailPrice,
-            importPrice: data.importPrice,
-            wholesalePrice: data.wholesalePrice,
-            livestreamPrice: data.livestreamPrice,
-            marketPrice: data.marketPrice,
-            upsalePrice: data.upsalePrice,
-            images: data.images || [],
+            name: res.data.name,
+            productCode: res.data.productCode,
+            barcode: res.data.barcode,
+            weight: res.data.weight,
+            shortDescription: res.data.shortDescription,
+            retailPrice: res.data.retailPrice,
+            importPrice: res.data.importPrice,
+            wholesalePrice: res.data.wholesalePrice,
+            livestreamPrice: res.data.livestreamPrice,
+            marketPrice: res.data.marketPrice,
+            upsalePrice: res.data.upsalePrice,
+            images: res.data.images || [],
           });
           this.isLoading = false;
         },
