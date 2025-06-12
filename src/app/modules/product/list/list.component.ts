@@ -10,6 +10,7 @@ import {
   faPenToSquare,
   faPlus,
   faTrash,
+  faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastrService } from 'ngx-toastr';
@@ -46,6 +47,7 @@ export class ListComponent {
   faPlus = faPlus;
   faPenToSquare = faPenToSquare;
   faTrash = faTrash;
+  faSearch = faSearch;
 
   page = 1;
   pageSize = 10;

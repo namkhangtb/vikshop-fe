@@ -1,12 +1,12 @@
 <div
   class="modal fade show d-block"
   tabindex="-1"
-  style="background: rgba(0, 0, 0, 0.3)"
+  style="background: rgba(0, 0, 0, 0.5)"
 >
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content rounded-4 border-0">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
       <div
-        class="modal-header bg-gradient bg-primary text-white border-0 py-3 rounded-top-4"
+        class="modal-header bg-gradient bg-primary text-white border-0 py-4 rounded-top-4"
       >
         <h4 class="mb-0 text-center fw-bold w-100">
           <fa-icon [icon]="faBox" class="me-2"></fa-icon>Cập nhật Sản Phẩm
@@ -20,212 +20,244 @@
       </div>
       <div class="modal-body p-4">
         <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
-          <div class="mb-4">
-            <label class="form-label fw-semibold">Tên sản phẩm</label>
-            <input
-              type="text"
-              class="form-control shadow-sm"
-              placeholder="Nhập tên sản phẩm"
-              formControlName="name"
-              [ngClass]="{
-                'is-invalid':
-                  productForm.get('name')?.invalid &&
-                  productForm.get('name')?.touched
-              }"
-            />
-            <div class="invalid-feedback">Vui lòng nhập tên sản phẩm</div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Mã sản phẩm (SKU)</label>
-              <input
-                type="text"
-                class="form-control shadow-sm"
-                formControlName="productCode"
-                placeholder="Nhập mã sản phẩm (SKU)"
-              />
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light py-3">
+              <h5 class="mb-0 fw-semibold">Thông tin cơ bản</h5>
             </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Mã vạch</label>
-              <input
-                type="text"
-                class="form-control shadow-sm"
-                formControlName="barcode"
-                placeholder="Nhập mã vạch sản phẩm (nếu có)"
-              />
-            </div>
-          </div>
-          <div class="row mb-3 align-items-end">
-            <label class="form-label fw-semibold">Khối lượng</label>
-            <div class="input-group">
-              <input
-                type="text"
-                min="0"
-                class="form-control shadow-sm"
-                formControlName="weight"
-                mask="separator"
-                placeholder="Nhập khối lượng sản phẩm"
-              />
-              <span class="input-group-text fw-semibold">gram</span>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Mô tả ngắn</label>
-            <textarea
-              class="form-control shadow-sm"
-              rows="5"
-              formControlName="shortDescription"
-            ></textarea>
-          </div>
-          <div class="row mb-3">
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Giá bán lẻ</label>
-              <div class="input-group">
+            <div class="card-body p-4">
+              <div class="mb-4">
+                <label class="form-label fw-semibold">Tên sản phẩm</label>
                 <input
                   type="text"
                   class="form-control shadow-sm"
-                  mask="separator.0"
-                  thousandSeparator="."
-                  formControlName="retailPrice"
+                  placeholder="Nhập tên sản phẩm"
+                  formControlName="name"
+                  [ngClass]="{
+                    'is-invalid':
+                      productForm.get('name')?.invalid &&
+                      productForm.get('name')?.touched
+                  }"
                 />
-                <span class="input-group-text fw-semibold">₫</span>
+                <div class="invalid-feedback">Vui lòng nhập tên sản phẩm</div>
               </div>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Giá nhập</label>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control shadow-sm"
-                  mask="separator.0"
-                  thousandSeparator="."
-                  formControlName="importPrice"
-                />
-                <span class="input-group-text fw-semibold">₫</span>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Giá sỉ</label>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control shadow-sm"
-                  mask="separator.0"
-                  thousandSeparator="."
-                  formControlName="wholesalePrice"
-                />
-                <span class="input-group-text fw-semibold">₫</span>
-              </div>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Giá livestream</label>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control shadow-sm"
-                  mask="separator.0"
-                  thousandSeparator="."
-                  formControlName="livestreamPrice"
-                />
-                <span class="input-group-text fw-semibold">₫</span>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Giá thị trường</label>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control shadow-sm"
-                  mask="separator.0"
-                  thousandSeparator="."
-                  formControlName="marketPrice"
-                />
-                <span class="input-group-text fw-semibold">₫</span>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Giá Upsale</label>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control shadow-sm"
-                  mask="separator.0"
-                  thousandSeparator="."
-                  formControlName="upsalePrice"
-                />
-                <span class="input-group-text fw-semibold">₫</span>
-              </div>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Ảnh sản phẩm</label>
-            <div class="row g-2">
-              <div class="col-auto">
-                <label
-                  class="d-flex align-items-center justify-content-center bg-light border rounded-2 shadow-sm m-0 p-0 image-upload-label"
-                >
-                  <div
-                    class="w-100 h-100 d-flex flex-column align-items-center justify-content-center"
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold"
+                    >Mã sản phẩm (SKU)</label
                   >
-                    <fa-icon
-                      [icon]="faFileImage"
-                      class="fs-1 text-info mb-1"
-                    ></fa-icon>
-                  </div>
                   <input
-                    type="file"
-                    hidden
-                    multiple
-                    (change)="onImageSelected($event)"
-                    accept="image/*"
+                    type="text"
+                    class="form-control shadow-sm"
+                    formControlName="productCode"
+                    placeholder="Nhập mã sản phẩm (SKU)"
                   />
-                </label>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Mã vạch</label>
+                  <input
+                    type="text"
+                    class="form-control shadow-sm"
+                    formControlName="barcode"
+                    placeholder="Nhập mã vạch sản phẩm (nếu có)"
+                  />
+                </div>
               </div>
-              <ng-container *ngIf="productForm.get('images')?.value">
-                <ng-container
-                  *ngFor="
-                    let image of productForm.get('images')?.value;
-                    let i = index
-                  "
-                >
-                  <div class="col-auto">
-                    <div
-                      class="position-relative bg-light border rounded-2 overflow-hidden shadow-sm image-preview"
-                    >
-                      <app-image-viewer
-                        [imageSource]="urlImage + image"
-                        class="rounded border"
-                        class="w-100 h-100 object-fit-cover"
-                        [showDeleteButton]="true"
-                        (onDelete)="removeImage(i)"
-                      >
-                      </app-image-viewer>
-                    </div>
-                  </div>
-                </ng-container>
-              </ng-container>
-            </div>
-            <div
-              *ngIf="productForm.get('images')?.errors?.['maxLength'] "
-              class="invalid-feedback d-block"
-            >
-              Không thể tải thêm ảnh lên do quá số lượng tối đa cho phép (9
-              ảnh).
+              <div class="row mb-3 align-items-end">
+                <label class="form-label fw-semibold">Khối lượng</label>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    min="0"
+                    class="form-control shadow-sm"
+                    formControlName="weight"
+                    mask="separator"
+                    placeholder="Nhập khối lượng sản phẩm"
+                  />
+                  <span class="input-group-text fw-semibold">gram</span>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Mô tả ngắn</label>
+                <textarea
+                  class="form-control shadow-sm"
+                  rows="3"
+                  formControlName="shortDescription"
+                  placeholder="Nhập mô tả ngắn về sản phẩm"
+                ></textarea>
+              </div>
             </div>
           </div>
-          <div class="d-flex justify-content-end gap-2 mt-4">
+
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light py-3">
+              <h5 class="mb-0 fw-semibold">Thông tin giá</h5>
+            </div>
+            <div class="card-body p-4">
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Giá bán lẻ</label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control shadow-sm"
+                      mask="separator.0"
+                      thousandSeparator="."
+                      formControlName="retailPrice"
+                      placeholder="0"
+                    />
+                    <span class="input-group-text fw-semibold">₫</span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Giá nhập</label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control shadow-sm"
+                      mask="separator.0"
+                      thousandSeparator="."
+                      formControlName="importPrice"
+                      placeholder="0"
+                    />
+                    <span class="input-group-text fw-semibold">₫</span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Giá sỉ</label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control shadow-sm"
+                      mask="separator.0"
+                      thousandSeparator="."
+                      formControlName="wholesalePrice"
+                      placeholder="0"
+                    />
+                    <span class="input-group-text fw-semibold">₫</span>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Giá livestream</label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control shadow-sm"
+                      mask="separator.0"
+                      thousandSeparator="."
+                      formControlName="livestreamPrice"
+                      placeholder="0"
+                    />
+                    <span class="input-group-text fw-semibold">₫</span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Giá thị trường</label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control shadow-sm"
+                      mask="separator.0"
+                      thousandSeparator="."
+                      formControlName="marketPrice"
+                      placeholder="0"
+                    />
+                    <span class="input-group-text fw-semibold">₫</span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Giá Upsale</label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control shadow-sm"
+                      mask="separator.0"
+                      thousandSeparator="."
+                      formControlName="upsalePrice"
+                      placeholder="0"
+                    />
+                    <span class="input-group-text fw-semibold">₫</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light py-3">
+              <h5 class="mb-0 fw-semibold">Hình ảnh sản phẩm</h5>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-auto">
+                  <label
+                    class="d-flex align-items-center justify-content-center bg-light border rounded-3 shadow-sm m-0 p-0 image-upload-label"
+                    style="width: 120px; height: 120px; cursor: pointer"
+                  >
+                    <div
+                      class="w-100 h-100 d-flex flex-column align-items-center justify-content-center"
+                    >
+                      <fa-icon
+                        [icon]="faFileImage"
+                        class="fs-1 text-primary mb-1"
+                      ></fa-icon>
+                      <small class="text-muted">Thêm ảnh</small>
+                    </div>
+                    <input
+                      type="file"
+                      hidden
+                      multiple
+                      (change)="onImageSelected($event)"
+                      accept="image/*"
+                    />
+                  </label>
+                </div>
+                <ng-container *ngIf="productForm.get('images')?.value">
+                  <ng-container
+                    *ngFor="
+                      let image of productForm.get('images')?.value;
+                      let i = index
+                    "
+                  >
+                    <div class="col-auto">
+                      <div
+                        class="position-relative bg-light border rounded-3 overflow-hidden shadow-sm image-preview"
+                        style="width: 120px; height: 120px"
+                      >
+                        <app-image-viewer
+                          [imageSource]="urlImage + image"
+                          class="w-100 h-100 object-fit-cover"
+                          [showDeleteButton]="true"
+                          (onDelete)="removeImage(i)"
+                        >
+                        </app-image-viewer>
+                      </div>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </div>
+              <div
+                *ngIf="productForm.get('images')?.errors?.['maxLength']"
+                class="invalid-feedback d-block mt-2"
+              >
+                Không thể tải thêm ảnh lên do quá số lượng tối đa cho phép (9
+                ảnh).
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-3 mt-4">
             <button
               type="button"
-              class="btn btn-outline-secondary px-4"
+              class="btn btn-outline-secondary px-4 py-2"
               (click)="close()"
             >
               Quay lại danh sách
             </button>
             <button
               type="submit"
-              class="btn btn-success px-4 fw-semibold d-flex align-items-center justify-content-center"
+              class="btn btn-success px-4 py-2 fw-semibold d-flex align-items-center justify-content-center"
             >
               <span
                 *ngIf="isLoading"

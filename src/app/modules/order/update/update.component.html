@@ -1,16 +1,15 @@
 <div
   class="modal fade show d-block"
   tabindex="-1"
-  style="background: rgba(0, 0, 0, 0.3)"
+  style="background: rgba(0, 0, 0, 0.5)"
 >
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content rounded-4 border-0">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
       <div
-        class="modal-header bg-gradient bg-primary text-white border-0 py-3 rounded-top-4"
+        class="modal-header bg-gradient bg-primary text-white border-0 py-4 rounded-top-4"
       >
-        <h4 class="mb-0 text-center fw-bold w-100">
-          <fa-icon [icon]="faCartShopping" class="me-2"></fa-icon>Cập nhật Đơn
-          Hàng
+        <h4 class="mb-0 text-center fw-bold w-100 fs-4">
+          <fa-icon [icon]="faCartShopping" class="me-2"></fa-icon>Cập nhật Đơn Hàng
         </h4>
         <button
           type="button"
@@ -25,169 +24,172 @@
           [formGroup]="orderForm"
           (ngSubmit)="onSubmit()"
         >
-          <div class="mb-3">
-            <label for="name" class="form-label fw-semibold">
-              <fa-icon [icon]="faUser" class="me-1 text-primary"></fa-icon>Họ
-              tên
-            </label>
-            <input
-              type="text"
-              id="name"
-              class="form-control shadow-sm"
-              placeholder="Nhập tên của bạn"
-              formControlName="name"
-              [ngClass]="{
-                'is-invalid':
-                  orderForm.get('name')?.invalid &&
-                  orderForm.get('name')?.touched
-              }"
-            />
-            <div class="invalid-feedback">Vui lòng nhập tên</div>
-          </div>
-
-          <div class="mb-3">
-            <label for="phoneNumber" class="form-label fw-semibold">
-              <fa-icon
-                [icon]="faMobileScreen"
-                class="me-1 text-primary"
-              ></fa-icon
-              >Số điện thoại
-            </label>
-            <input
-              type="text"
-              id="phone"
-              class="form-control shadow-sm"
-              placeholder="Nhập số điện thoại"
-              formControlName="phoneNumber"
-              [ngClass]="{
-                'is-invalid':
-                  orderForm.get('phoneNumber')?.invalid &&
-                  orderForm.get('phoneNumber')?.touched
-              }"
-              prefix="+84 "
-              mask="(000) 000 00 00"
-            />
-            <div class="invalid-feedback">Số điện thoại không hợp lệ</div>
-          </div>
-
-          <div class="mb-3">
-            <label for="email" class="form-label fw-semibold">
-              <fa-icon [icon]="faEnvelope" class="me-1 text-primary"></fa-icon
-              >Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              class="form-control shadow-sm"
-              placeholder="Nhập địa chỉ email"
-              formControlName="email"
-              [ngClass]="{
-                'is-invalid':
-                  orderForm.get('email')?.invalid &&
-                  orderForm.get('email')?.touched
-              }"
-            />
-            <div class="invalid-feedback">Email không hợp lệ</div>
-          </div>
-
-          <label class="form-label fw-semibold mb-2">
-            <fa-icon [icon]="faBox" class="me-1 text-primary"></fa-icon>Sản phẩm
-          </label>
-          <div class="mb-3 d-flex align-items-center gap-2">
-            <ng-select
-              [items]="products"
-              bindLabel="name"
-              bindValue="productId"
-              placeholder="Tìm kiếm và chọn sản phẩm"
-              [searchable]="true"
-              [clearable]="true"
-              class="w-100"
-              [formControl]="selectedProductControl"
-              (clear)="onClearProduct()"
-              (search)="onSearchProduct($event)"
-              (change)="addProduct($event)"
-              (scrollToEnd)="loadMoreProduct()"
-            >
-            </ng-select>
-          </div>
-
-          <div formArrayName="products">
-            <div
-              *ngFor="let group of productsArray.controls; let i = index"
-              [formGroupName]="i"
-              class="border rounded-3 p-3 mb-3 bg-light d-flex align-items-center justify-content-between"
-            >
-              <div class="d-flex align-items-center gap-3">
-                <span class="badge bg-primary">{{ i + 1 }}</span>
-                <ng-container
-                  *ngIf="getProductImage(group.get('productId')?.value)"
-                >
-                  <app-image-viewer
-                    [imageSource]="
-                      urlImage + getProductImage(group.get('productId')?.value)
-                    "
-                    class="rounded shadow-sm object-fit-cover"
-                    style="width: 100px; height: 100px"
-                  >
-                  </app-image-viewer>
-                </ng-container>
-                <span class="fw-semibold">{{
-                  getProductName(group.get("productId")?.value)
-                }}</span>
-              </div>
-              <div class="d-flex align-items-center gap-2">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
                 <input
                   type="text"
-                  formControlName="count"
-                  min="1"
-                  class="form-control form-control-sm text-center"
-                  placeholder="Số lượng"
-                  style="width: 80px"
-                  mask="separator"
+                  id="name"
+                  class="form-control shadow-sm"
+                  placeholder="Nhập tên của bạn"
+                  formControlName="name"
+                  [ngClass]="{
+                    'is-invalid':
+                      orderForm.get('name')?.invalid &&
+                      orderForm.get('name')?.touched
+                  }"
                 />
-                <button
-                  class="btn btn-sm btn-outline-danger"
-                  type="button"
-                  (click)="removeProduct(i)"
-                  *ngIf="productsArray.length > 1"
-                  title="Xóa sản phẩm"
-                >
-                  <fa-icon [icon]="faXmark"></fa-icon>
-                </button>
+                <label for="name" class="fw-semibold">
+                  <fa-icon [icon]="faUser" class="me-1 text-primary"></fa-icon>Họ tên
+                </label>
+                <div class="invalid-feedback">Vui lòng nhập tên</div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  id="phone"
+                  class="form-control shadow-sm"
+                  placeholder="Nhập số điện thoại"
+                  formControlName="phoneNumber"
+                  [ngClass]="{
+                    'is-invalid':
+                      orderForm.get('phoneNumber')?.invalid &&
+                      orderForm.get('phoneNumber')?.touched
+                  }"
+                  prefix="+84 "
+                  mask="(000) 000 00 00"
+                />
+                <label for="phone" class="fw-semibold">
+                  <fa-icon [icon]="faMobileScreen" class="me-1 text-primary"></fa-icon>Số điện thoại
+                </label>
+                <div class="invalid-feedback">Số điện thoại không hợp lệ</div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="form-floating mb-3">
+                <input
+                  type="email"
+                  id="email"
+                  class="form-control shadow-sm"
+                  placeholder="Nhập địa chỉ email"
+                  formControlName="email"
+                  [ngClass]="{
+                    'is-invalid':
+                      orderForm.get('email')?.invalid &&
+                      orderForm.get('email')?.touched
+                  }"
+                />
+                <label for="email" class="fw-semibold">
+                  <fa-icon [icon]="faEnvelope" class="me-1 text-primary"></fa-icon>Email
+                </label>
+                <div class="invalid-feedback">Email không hợp lệ</div>
               </div>
             </div>
           </div>
 
-          <div class="mb-3">
-            <label for="totalAmount" class="form-label fw-semibold">
-              <fa-icon
-                [icon]="faMoneyBillWave"
-                class="me-1 text-success"
-              ></fa-icon
-              >Tổng tiền
-            </label>
-            <input
-              type="text"
-              id="totalAmount"
-              name="totalAmount"
-              class="form-control fw-bold text-success shadow-none"
-              formControlName="totalAmount"
-              readonly
-              mask="separator.0"
-              thousandSeparator="."
-            />
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light border-0 py-3">
+              <label class="form-label fw-semibold mb-0">
+                <fa-icon [icon]="faBox" class="me-1 text-primary"></fa-icon>Sản phẩm
+              </label>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <ng-select
+                  [items]="products"
+                  bindLabel="name"
+                  bindValue="productId"
+                  placeholder="Tìm kiếm và chọn sản phẩm"
+                  [searchable]="true"
+                  [clearable]="true"
+                  class="w-100"
+                  [formControl]="selectedProductControl"
+                  (clear)="onClearProduct()"
+                  (search)="onSearchProduct($event)"
+                  (change)="addProduct($event)"
+                  (scrollToEnd)="loadMoreProduct()"
+                >
+                </ng-select>
+              </div>
+
+              <div formArrayName="products">
+                <div
+                  *ngFor="let group of productsArray.controls; let i = index"
+                  [formGroupName]="i"
+                  class="border rounded-3 p-3 mb-3 bg-light d-flex align-items-center justify-content-between transition-all"
+                  style="transition: all 0.3s ease"
+                >
+                  <div class="d-flex align-items-center gap-3">
+                    <span class="badge bg-primary rounded-pill px-3 py-2">{{ i + 1 }}</span>
+                    <ng-container *ngIf="getProductImage(group.get('productId')?.value)">
+                      <app-image-viewer
+                        [imageSource]="urlImage + getProductImage(group.get('productId')?.value)"
+                        class="rounded shadow-sm object-fit-cover"
+                        style="width: 80px; height: 80px"
+                      >
+                      </app-image-viewer>
+                    </ng-container>
+                    <span class="fw-semibold">{{ getProductName(group.get("productId")?.value) }}</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <input
+                      type="text"
+                      formControlName="count"
+                      min="1"
+                      class="form-control form-control-sm text-center"
+                      placeholder="Số lượng"
+                      style="width: 80px"
+                      mask="separator"
+                    />
+                    <button
+                      class="btn btn-sm btn-outline-danger rounded-circle"
+                      type="button"
+                      (click)="removeProduct(i)"
+                      *ngIf="productsArray.length > 1"
+                      title="Xóa sản phẩm"
+                    >
+                      <fa-icon [icon]="faXmark"></fa-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  id="totalAmount"
+                  name="totalAmount"
+                  class="form-control fw-bold text-success shadow-none"
+                  formControlName="totalAmount"
+                  readonly
+                  mask="separator.0"
+                  thousandSeparator="."
+                />
+                <label for="totalAmount" class="fw-semibold">
+                  <fa-icon [icon]="faMoneyBillWave" class="me-1 text-success"></fa-icon>Tổng tiền
+                </label>
+              </div>
+            </div>
           </div>
 
           <div class="d-flex justify-content-end gap-2 mt-4">
             <button
-              class="btn btn-outline-secondary px-4"
+              class="btn btn-outline-secondary px-4 rounded-pill"
               type="button"
               (click)="close()"
             >
               Đóng
             </button>
             <button
-              class="btn btn-success px-4 fw-semibold d-flex align-items-center justify-content-center"
+              class="btn btn-success px-4 fw-semibold d-flex align-items-center justify-content-center rounded-pill"
               type="submit"
               [disabled]="orderForm.invalid || isLoading"
             >

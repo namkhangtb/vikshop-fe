@@ -1,5 +1,8 @@
 <div class="modal-header bg-danger text-white">
-  <h3 class="modal-title"><fa-icon [icon]="faTrash"></fa-icon> {{ title }}</h3>
+  <h3 class="modal-title d-flex align-items-center gap-2">
+    <fa-icon [icon]="faTrash" class="fa-lg"></fa-icon>
+    {{ title }}
+  </h3>
   <button
     type="button"
     class="btn-close btn-close-white"
@@ -7,10 +10,14 @@
     (click)="onCancel()"
   ></button>
 </div>
-<div class="modal-body">
-  <p>{{ message }}</p>
+<div class="modal-body text-center py-4">
+  <p class="lead mb-0">{{ message }}</p>
 </div>
-<div class="modal-footer">
-  <button class="btn btn-secondary" (click)="onCancel()">Hủy</button>
-  <button class="btn btn-danger" (click)="onConfirm()">Xóa</button>
+<div class="modal-footer justify-content-center border-top-0">
+  <button class="btn btn-light px-4 me-2" (click)="onCancel()">
+    <fa-icon [icon]="faTimes" class="me-2"></fa-icon>Hủy
+  </button>
+  <button class="btn btn-danger px-4" (click)="onConfirm()">
+    <fa-icon [icon]="faTrash" class="me-2"></fa-icon>Xóa
+  </button>
 </div>

@@ -6,6 +6,7 @@ import {
   faPlus,
   faTrash,
   faBox,
+  faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
@@ -44,7 +45,7 @@ export class ListComponent {
   faPenToSquare = faPenToSquare;
   faTrash = faTrash;
   faBox = faBox;
-
+  faSearch = faSearch;
   modalRef?: BsModalRef;
   selectedOrder: Order = {} as Order;
 

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faExclamationTriangle, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-delete-modal',
@@ -16,6 +16,8 @@ export class DeleteModalComponent {
   @Output() confirm: EventEmitter<void> = new EventEmitter();
 
   faTrash = faTrash;
+  faExclamationTriangle = faExclamationTriangle;
+  faTimes = faTimes;
 
   onCancel() {
     this.cancel.emit();

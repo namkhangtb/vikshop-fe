@@ -1,94 +1,115 @@
-<div class="container my-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Danh sách đơn hàng</h2>
-    <div class="d-flex justify-content-end">
-      <div class="mb-3">
-        <input
-          type="text"
-          class="form-control w-auto me-5"
-          placeholder="Tìm kiếm"
-          [(ngModel)]="searchText"
-          (ngModelChange)="onSearchChange()"
-        />
+<div class="container-fluid px-4 py-4">
+  <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-1 text-primary fw-bold">Danh sách đơn hàng</h2>
+          <p class="text-muted mb-0">Quản lý và theo dõi các đơn hàng của bạn</p>
+        </div>
+        <div class="d-flex justify-content-end gap-3">
+          <div class="search-box">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0">
+                <fa-icon [icon]="faSearch" class="text-muted"></fa-icon>
+              </span>
+              <input
+                type="text"
+                class="form-control border-start-0"
+                placeholder="Tìm kiếm đơn hàng..."
+                [(ngModel)]="searchText"
+                (ngModelChange)="onSearchChange()"
+              />
+            </div>
+          </div>
+          <button
+            class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm rounded-3 px-4"
+            (click)="openAddOrderModal(templateModalAddOrder)"
+          >
+            <fa-icon [icon]="faPlus"></fa-icon> Thêm đơn hàng
+          </button>
+        </div>
       </div>
-      <a
-        class="btn btn-primary mb-3 d-inline-flex align-items-center"
-        (click)="openAddOrderModal(templateModalAddOrder)"
-      >
-        <fa-icon [icon]="faPlus" class="me-1"></fa-icon> Thêm
-      </a>
-    </div>
-  </div>
-  <div class="table-responsive shadow-sm rounded">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
-        <tr>
-          <th scope="col">STT</th>
-          <th scope="col">Họ tên</th>
-          <th scope="col">Số điện thoại</th>
-          <th scope="col">Email</th>
-          <th scope="col">Sản phẩm</th>
-          <th scope="col">Tổng tiền</th>
-          <th scope="col">Chức năng</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of items; let i = index">
-          <th scope="row">{{ (page - 1) * pageSize + i + 1 }}</th>
-          <td>{{ item.name }}</td>
-          <td>{{ item.phoneNumber }}</td>
-          <td>{{ item.email }}</td>
-          <td>
-            <div class="products-list">
-              <div
-                *ngFor="let p of item.products"
-                class="product-item p-2 mb-2 rounded bg-light hover-shadow transition-all"
-              >
-                <div class="d-flex align-items-center gap-3">
-                  <span class="badge bg-primary px-3 py-2">
-                    {{ p.productId.productCode }}
-                  </span>
-                  <div class="product-info flex-grow-1">
-                    <div class="product-name text-dark fw-medium mb-1">
-                      {{ p.productId.name }}
-                    </div>
-                    <div
-                      class="product-quantity text-muted small d-flex align-items-center"
-                    >
-                      <fa-icon [icon]="faBox" class="me-1"></fa-icon>
-                      <span class="fw-bold">{{ p.count }}</span> &nbsp;sản phẩm
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr class="bg-light">
+              <th scope="col" class="ps-4 py-3">STT</th>
+              <th scope="col" class="py-3">Họ tên</th>
+              <th scope="col" class="py-3">Số điện thoại</th>
+              <th scope="col" class="py-3">Email</th>
+              <th scope="col" class="py-3">Sản phẩm</th>
+              <th scope="col" class="py-3">Tổng tiền</th>
+              <th scope="col" class="text-end pe-4 py-3">Chức năng</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of items; let i = index" class="border-bottom">
+              <th scope="row" class="ps-4 py-3">{{ (page - 1) * pageSize + i + 1 }}</th>
+              <td class="py-3">
+                <div class="d-flex align-items-center">
+                  <div class="avatar-circle bg-primary bg-opacity-10 text-primary me-3">
+                    {{ item.name.charAt(0).toUpperCase() }}
+                  </div>
+                  <span class="fw-medium">{{ item.name }}</span>
+                </div>
+              </td>
+              <td class="py-3">{{ item.phoneNumber }}</td>
+              <td class="py-3">{{ item.email }}</td>
+              <td class="py-3">
+                <div class="products-list">
+                  <div
+                    *ngFor="let p of item.products"
+                    class="product-item p-3 mb-2 rounded-3 bg-light hover-shadow transition-all"
+                  >
+                    <div class="d-flex align-items-center gap-3">
+                      <span class="badge bg-primary px-3 py-2 rounded-pill">
+                        {{ p.productId.productCode }}
+                      </span>
+                      <div class="product-info flex-grow-1">
+                        <div class="product-name text-dark fw-medium mb-1">
+                          {{ p.productId.name }}
+                        </div>
+                        <div
+                          class="product-quantity text-muted small d-flex align-items-center"
+                        >
+                          <fa-icon [icon]="faBox" class="me-1"></fa-icon>
+                          <span class="fw-bold">{{ p.count }}</span> &nbsp;sản phẩm
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </td>
-          <td>
-            <span class="fw-bold text-success">
-              {{ item.totalAmount | currency : "VND" : "symbol" : "1.2" }}
-            </span>
-          </td>
-          <td>
-            <div class="d-flex gap-2">
-              <button
-                class="btn btn-sm btn-outline-primary d-inline-flex align-items-center"
-                (click)="openUpdateOrderModal(templateModalUpdateOrder, item)"
-              >
-                <fa-icon [icon]="faPenToSquare" class="me-1"></fa-icon> Sửa
-              </button>
-              <button
-                class="btn btn-sm btn-outline-danger d-inline-flex align-items-center"
-                (click)="openDeleteModal(templateModalDeleteOrder, item)"
-              >
-                <fa-icon [icon]="faTrash" class="me-1"></fa-icon> Xóa
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+              </td>
+              <td class="py-3">
+                <span class="fw-bold text-success">
+                  {{ item.totalAmount | currency : "VND" : "symbol" : "1.2" }}
+                </span>
+              </td>
+              <td class="py-3">
+                <div class="d-flex gap-2 justify-content-end pe-4">
+                  <button
+                    class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 rounded-pill px-3"
+                    (click)="openUpdateOrderModal(templateModalUpdateOrder, item)"
+                  >
+                    <fa-icon [icon]="faPenToSquare"></fa-icon> Sửa
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 rounded-pill px-3"
+                    (click)="openDeleteModal(templateModalDeleteOrder, item)"
+                  >
+                    <fa-icon [icon]="faTrash"></fa-icon> Xóa
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-  <div class="d-flex justify-content-end mt-3">
+
+  <div class="d-flex justify-content-end">
     <pagination
       [boundaryLinks]="true"
       [totalItems]="totalItems"
@@ -99,6 +120,7 @@
       nextText="&rsaquo;"
       firstText="&laquo;"
       lastText="&raquo;"
+      class="pagination-sm"
     >
     </pagination>
   </div>
