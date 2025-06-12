@@ -27,6 +27,7 @@ import { ProductService } from '../../product/product.service';
 import { ProductModule } from '../../product/product.module';
 import { Product } from '../../product/types';
 import { environment } from 'environments/environment';
+import { debounceTime, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-update',
@@ -66,12 +67,13 @@ export class UpdateComponent implements OnInit {
         Validators.pattern(/^[a-zA-Z0-9._%+-]+@gmail\.com$/),
       ],
     ],
-    products: this.fb.array([]),
+    products: this.fb.array([], [Validators.required, Validators.minLength(1)]),
     totalAmount: [{ value: 0, disabled: true }, Validators.required],
   });
 
   id: string = '';
   products: Product[] = [];
+  productMap: { [key: string]: Product } = {};
   isLoading = false;
 
   faCartShopping = faCartShopping;
@@ -89,6 +91,8 @@ export class UpdateComponent implements OnInit {
   loading = false;
   hasMore = true;
   currentSearch = '';
+  private productSearchChanged = new Subject<string>();
+  private destroy$ = new Subject<void>();
 
   urlImage: string = environment.apiUrl + '/uploads/';
 
@@ -96,6 +100,27 @@ export class UpdateComponent implements OnInit {
     this.id = this.orderId || '';
     this.fetchProducts();
     this.fetchDataForm();
+    this.productSearchChanged
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe((keyword) => {
+        this.currentSearch = keyword;
+        this.page = 1;
+        this.products = [];
+        this.hasMore = true;
+        this.fetchProducts();
+      });
+  }
+
+  onSearchProduct(event: any) {
+    this.productSearchChanged.next(event.term);
+  }
+
+  loadMoreProduct() {
+    this.fetchProducts();
+  }
+
+  onClearProduct() {
+    this.productSearchChanged.next('');
   }
 
   get productsArray(): FormArray {
@@ -112,11 +137,20 @@ export class UpdateComponent implements OnInit {
   }
 
   addProduct(product: any) {
-    if (product) {
-      this.productsArray.push(this.createProductGroup(product.id, 1));
-      this.selectedProductControl.reset();
-      this.calculateTotalAmount();
+    if (!product) return;
+
+    const existingProduct = this.productsArray.controls.find(
+      (control) => control.get('productId')?.value === product.id
+    );
+
+    if (existingProduct) {
+      this.toastr.warning('Sản phẩm này đã được thêm vào đơn hàng');
+      return;
     }
+
+    this.productsArray.push(this.createProductGroup(product.id, 1));
+    this.selectedProductControl.reset();
+    this.calculateTotalAmount();
   }
 
   removeProduct(index: number) {
@@ -128,9 +162,11 @@ export class UpdateComponent implements OnInit {
     let total = 0;
     for (const group of this.productsArray.controls) {
       const { productId, count } = group.value;
-      const product = this.products.find((p) => p.id === productId);
+      const product =
+        this.productMap[productId] ||
+        this.products.find((p) => p.id === productId);
       if (product) {
-        total += count * product?.retailPrice;
+        total += count * product.retailPrice;
       }
     }
     this.orderForm.get('totalAmount')?.setValue(total);
@@ -179,17 +215,23 @@ export class UpdateComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
-          this.products = [...this.products, ...res.data];
-          this.hasMore = res.data.length === this.pageSize;
+          const data = Array.isArray(res.data) ? res.data : [];
+          this.products = [...this.products, ...data];
+          this.hasMore = data.length === this.pageSize;
           this.loading = false;
           this.page++;
         },
-        error: (err) => console.error('Lỗi khi lấy dữ liệu sản phẩm', err),
+        error: (err) => {
+          console.error('Lỗi khi lấy dữ liệu sản phẩm', err);
+          this.toastr.error('Không thể tải danh sách sản phẩm');
+          this.loading = false;
+        },
       });
   }
 
   fetchDataForm() {
     if (!this.id) return;
+    this.isLoading = true;
     this.orderService.getOrder(this.id).subscribe({
       next: (res: any) => {
         this.orderForm.patchValue({
@@ -198,14 +240,22 @@ export class UpdateComponent implements OnInit {
           email: res.data.email,
           totalAmount: res.data.totalAmount,
         });
+
         this.productsArray.clear();
         for (let item of res.data.products) {
+          this.productMap[item.productId.id] = item.productId;
           this.productsArray.push(
-            this.createProductGroup(item.productId, item.count)
+            this.createProductGroup(item.productId.id, item.count)
           );
         }
+        this.isLoading = false;
       },
-      error: (err) => console.error('Lỗi khi lấy đơn hàng', err),
+      error: (err) => {
+        console.error('Lỗi khi lấy đơn hàng', err);
+        this.toastr.error('Không thể tải thông tin đơn hàng');
+        this.close();
+        this.isLoading = false;
+      },
     });
   }
 
@@ -215,16 +265,35 @@ export class UpdateComponent implements OnInit {
   }
 
   getProductName(productId: string): string {
+    console.log(this.productMap);
+
+    if (this.productMap[productId]) {
+      return this.productMap[productId].name;
+    }
     const product = this.products.find((p) => p.id === productId);
-    return product ? product.name : '';
+    if (product) {
+      this.productMap[productId] = product;
+      return product.name;
+    }
+    return '';
   }
 
   getProductImage(productId: string): string | null {
+    console.log(this.productMap);
+
+    if (this.productMap[productId]) {
+      return this.productMap[productId].images?.[0] ?? null;
+    }
     const product = this.products.find((p) => p.id === productId);
-    return product ? product.images?.[0] ?? null : null;
+    if (product) {
+      this.productMap[productId] = product;
+      return product.images?.[0] ?? null;
+    }
+    return null;
   }
 
-  loadMoreProduct() {
-    this.fetchProducts();
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

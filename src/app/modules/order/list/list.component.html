@@ -39,14 +39,29 @@
           <td>{{ item.phoneNumber }}</td>
           <td>{{ item.email }}</td>
           <td>
-            <ul class="list-unstyled mb-0">
-              <li *ngFor="let p of item.products">
-                <span class="badge bg-secondary">Mã: {{ p.productId }}</span>
-                <span class="ms-2"
-                  >SL: <strong>{{ p.count }}</strong></span
-                >
-              </li>
-            </ul>
+            <div class="products-list">
+              <div
+                *ngFor="let p of item.products"
+                class="product-item p-2 mb-2 rounded bg-light hover-shadow transition-all"
+              >
+                <div class="d-flex align-items-center gap-3">
+                  <span class="badge bg-primary px-3 py-2">
+                    {{ p.productId.productCode }}
+                  </span>
+                  <div class="product-info flex-grow-1">
+                    <div class="product-name text-dark fw-medium mb-1">
+                      {{ p.productId.name }}
+                    </div>
+                    <div
+                      class="product-quantity text-muted small d-flex align-items-center"
+                    >
+                      <fa-icon [icon]="faBox" class="me-1"></fa-icon>
+                      <span class="fw-bold">{{ p.count }}</span> &nbsp;sản phẩm
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </td>
           <td>
             <span class="fw-bold text-success">

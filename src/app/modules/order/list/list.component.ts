@@ -5,6 +5,7 @@ import {
   faPenToSquare,
   faPlus,
   faTrash,
+  faBox,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
@@ -15,6 +16,7 @@ import { UpdateComponent } from '../update/update.component';
 import { ToastrService } from 'ngx-toastr';
 import { Order } from '../types';
 import { DeleteModalComponent } from '@shared/components';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-list',
@@ -41,6 +43,7 @@ export class ListComponent {
   faPlus = faPlus;
   faPenToSquare = faPenToSquare;
   faTrash = faTrash;
+  faBox = faBox;
 
   modalRef?: BsModalRef;
   selectedOrder: Order = {} as Order;
@@ -50,14 +53,30 @@ export class ListComponent {
   pageSize = 10;
   totalItems = 0;
   searchText: string = '';
+  private searchTextChanged = new Subject<string>();
+  private destroy$ = new Subject<void>();
 
   ngOnInit() {
-    this.fetchOrders();
+    this.fetchOrders()
+    this.searchTextChanged
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.fetchOrders();
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   fetchOrders() {
     this.orderService
-      .getOrders({ page: this.page, limit: this.pageSize, keyword: this.searchText})
+      .getOrders({
+        page: this.page,
+        limit: this.pageSize,
+        keyword: this.searchText,
+      })
       .subscribe({
         next: (res) => {
           this.items = res.data;
@@ -68,7 +87,7 @@ export class ListComponent {
   }
 
   onSearchChange() {
-    this.fetchOrders();
+    this.searchTextChanged.next(this.searchText);
   }
 
   pageChanged(event: any) {
@@ -122,3 +141,4 @@ export class ListComponent {
     });
   }
 }
+

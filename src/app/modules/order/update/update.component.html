@@ -103,8 +103,10 @@
               [clearable]="true"
               class="w-100"
               [formControl]="selectedProductControl"
-              (scrollToEnd)="loadMoreProduct()"
+              (clear)="onClearProduct()"
+              (search)="onSearchProduct($event)"
               (change)="addProduct($event)"
+              (scrollToEnd)="loadMoreProduct()"
             >
             </ng-select>
           </div>

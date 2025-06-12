@@ -26,6 +26,7 @@ import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { ProductModule } from '../../product/product.module';
 import { ProductService } from '../../product/product.service';
 import { environment } from 'environments/environment';
+import { debounceTime, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-create',
@@ -87,11 +88,34 @@ export class CreateComponent {
   loading = false;
   hasMore = true;
   currentSearch = '';
+  private productSearchChanged = new Subject<string>();
+  private destroy$ = new Subject<void>();
 
   urlImage: string = environment.apiUrl + '/uploads/';
 
   ngOnInit() {
     this.fetchProducts();
+    this.productSearchChanged
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe((keyword) => {
+        this.currentSearch = keyword;
+        this.page = 1;
+        this.products = [];
+        this.hasMore = true;
+        this.fetchProducts();
+      });
+  }
+
+  onSearchProduct(event: any) {
+    this.productSearchChanged.next(event.term);
+  }
+
+  loadMoreProduct() {
+    this.fetchProducts();
+  }
+
+  onClearProduct() {
+    this.productSearchChanged.next('');
   }
 
   get productsArray(): FormArray {
@@ -108,11 +132,20 @@ export class CreateComponent {
   }
 
   addProduct(product: any) {
-    if (product) {
-      this.productsArray.push(this.createProductGroup(product.id, 1));
-      this.selectedProductControl.reset();
-      this.calculateTotalAmount();
+    if (!product) return;
+
+    const existingProduct = this.productsArray.controls.find(
+      (control) => control.get('productId')?.value === product.id
+    );
+
+    if (existingProduct) {
+      this.toastr.warning('Sản phẩm này đã được thêm vào đơn hàng');
+      return;
     }
+
+    this.productsArray.push(this.createProductGroup(product.id, 1));
+    this.selectedProductControl.reset();
+    this.calculateTotalAmount();
   }
 
   removeProduct(index: number) {
@@ -175,12 +208,17 @@ export class CreateComponent {
       })
       .subscribe({
         next: (res) => {
-          this.products = [...this.products, ...res.data];
-          this.hasMore = res.data.length === this.pageSize;
+          const data = Array.isArray(res.data) ? res.data : [];
+          this.products = [...this.products, ...data];
+          this.hasMore = data.length === this.pageSize;
           this.loading = false;
           this.page++;
         },
-        error: (err) => console.error('Lỗi khi lấy dữ liệu sản phẩm', err),
+        error: (err) => {
+          console.error('Lỗi khi lấy dữ liệu sản phẩm', err);
+          this.toastr.error('Không thể tải danh sách sản phẩm');
+          this.loading = false;
+        },
       });
   }
 
@@ -203,7 +241,8 @@ export class CreateComponent {
     return product ? product.images[0] : null;
   }
 
-  loadMoreProduct() {
-    this.fetchProducts();
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

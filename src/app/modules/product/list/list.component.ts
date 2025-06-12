@@ -16,6 +16,7 @@ import { ToastrService } from 'ngx-toastr';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { FormsModule } from '@angular/forms';
 import { DeleteModalComponent } from '@shared/components';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-list',
@@ -49,6 +50,8 @@ export class ListComponent {
   pageSize = 10;
   totalItems = 0;
   searchText: string = '';
+  private searchTextChanged = new Subject<string>();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private productService: ProductService,
@@ -58,6 +61,16 @@ export class ListComponent {
 
   ngOnInit() {
     this.fetchProducts();
+    this.searchTextChanged
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.fetchProducts();
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   fetchProducts() {
@@ -77,7 +90,7 @@ export class ListComponent {
   }
 
   onSearchChange() {
-    this.fetchProducts();
+    this.searchTextChanged.next(this.searchText);
   }
 
   pageChanged(event: any) {

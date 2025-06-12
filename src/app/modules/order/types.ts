@@ -1,5 +1,7 @@
+import { Product } from '../product/types';
+
 export class ProductItem {
-  productId!: string;
+  productId!: Product;
   count!: number;
 }
 export class Order {
