@@ -27,6 +27,7 @@ import { ProductModule } from '../../product/product.module';
 import { ProductService } from '../../product/product.service';
 import { environment } from 'environments/environment';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { ImageViewerComponent } from '@shared/components';
 
 @Component({
   selector: 'app-create',
@@ -40,6 +41,7 @@ import { debounceTime, Subject, takeUntil } from 'rxjs';
     NgxMaskDirective,
     ToastrModule,
     ProductModule,
+    ImageViewerComponent,
   ],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',

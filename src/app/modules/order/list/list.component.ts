@@ -57,7 +57,7 @@ export class ListComponent {
   private destroy$ = new Subject<void>();
 
   ngOnInit() {
-    this.fetchOrders()
+    this.fetchOrders();
     this.searchTextChanged
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(() => {
@@ -128,17 +128,20 @@ export class ListComponent {
 
     if (!this.selectedOrder?.id) return;
     this.orderService.deleteOrder(this.selectedOrder.id).subscribe({
-      next: () => {
-        this.fetchOrders();
-        this.modalRef?.hide();
-        this.toastr.success('Xóa đơn hàng thành công!');
+      next: (res) => {
+        if (res.statusText === 'ERROR') {
+          this.modalRef?.hide();
+          this.toastr.error(`Lỗi: ${res.message}`);
+        } else {
+          this.fetchOrders();
+          this.modalRef?.hide();
+          this.toastr.success('Xóa đơn hàng thành công!');
+        }
       },
       error: (err) => {
-        console.error('Lỗi khi xóa đơn hàng', err);
         this.modalRef?.hide();
-        this.toastr.error('Xóa đơn hàng thất bại!');
+        this.toastr.error(`Xóa đơn hàng thất bại: ${err.error.message}`);
       },
     });
   }
 }
-

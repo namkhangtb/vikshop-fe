@@ -194,19 +194,14 @@
                     <div
                       class="position-relative bg-light border rounded-2 overflow-hidden shadow-sm image-preview"
                     >
-                      <img
-                        [src]="urlImage + image"
-                        alt="Ảnh sản phẩm"
+                      <app-image-viewer
+                        [imageSource]="urlImage + image"
+                        class="rounded border"
                         class="w-100 h-100 object-fit-cover"
-                      />
-                      <button
-                        type="button"
-                        class="btn btn-light btn-sm position-absolute top-0 start-0 m-1 p-0 d-flex align-items-center justify-content-center rounded-circle border remove-image-btn"
-                        (click)="removeImage(i)"
-                        title="Xóa ảnh"
+                        [showDeleteButton]="true"
+                        (onDelete)="removeImage(i)"
                       >
-                        <span aria-hidden="true">&times;</span>
-                      </button>
+                      </app-image-viewer>
                     </div>
                   </div>
                 </ng-container>

@@ -118,17 +118,18 @@
             >
               <div class="d-flex align-items-center gap-3">
                 <span class="badge bg-primary">{{ i + 1 }}</span>
-                <img
+                <ng-container
                   *ngIf="getProductImage(group.get('productId')?.value)"
-                  [src]="
-                    urlImage + getProductImage(group.get('productId')?.value)
-                  "
-                  alt="Ảnh sản phẩm"
-                  width="50"
-                  height="50"
-                  class="rounded shadow-sm"
-                  style="object-fit: cover"
-                />
+                >
+                  <app-image-viewer
+                    [imageSource]="
+                      urlImage + getProductImage(group.get('productId')?.value)
+                    "
+                    class="rounded shadow-sm object-fit-cover"
+                    style="width: 100px; height: 100px"
+                  >
+                  </app-image-viewer>
+                </ng-container>
 
                 <span class="fw-semibold">{{
                   getProductName(group.get("productId")?.value)

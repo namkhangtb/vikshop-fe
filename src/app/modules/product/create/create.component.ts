@@ -14,6 +14,7 @@ import { environment } from '../../../../environments/environment';
 import { faBox, faFileImage } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastrService } from 'ngx-toastr';
+import { ImageViewerComponent } from '@shared/components';
 
 @Component({
   selector: 'app-create',
@@ -26,6 +27,7 @@ import { ToastrService } from 'ngx-toastr';
     UploadModule,
     FontAwesomeModule,
     NgxMaskDirective,
+    ImageViewerComponent,
   ],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',

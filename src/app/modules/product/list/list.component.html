@@ -41,15 +41,15 @@
           <td>{{ item.productCode }}</td>
           <td>{{ item.name }}</td>
           <td>
-            <div class="d-flex flex-wrap gap-1">
+            <div class="d-flex flex-wrap gap-1" style="min-width: 380px;">
               <ng-container *ngFor="let image of item.images">
-                <img
+                <app-image-viewer
                   *ngIf="image"
-                  [src]="urlImage + image"
-                  alt="Product Image"
+                  [imageSource]="urlImage + image"
                   class="rounded border"
-                  style="width: 40px; height: 40px; object-fit: cover"
-                />
+                  style="width: 120px; height: 120px;"
+                >
+                </app-image-viewer>
               </ng-container>
             </div>
           </td>

@@ -1,0 +1,41 @@
+<div
+  class="image-container border-0 shadow-sm overflow-hidden"
+  (click)="openPreview()"
+>
+  <img [src]="imageSource" alt="Image" class="image-content" />
+  <div
+    class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-50 overlay"
+  >
+    <div class="d-flex gap-3 action-buttons">
+      <button
+        type="button"
+        class="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center action-button"
+        title="View image"
+      >
+        <fa-icon [icon]="faEye"></fa-icon>
+      </button>
+      <button
+        type="button"
+        *ngIf="showDeleteButton"
+        class="btn btn-danger rounded-circle p-0 d-flex align-items-center justify-content-center action-button"
+        (click)="handleDelete()"
+        title="Delete image"
+      >
+        <fa-icon [icon]="faTrash"></fa-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div
+  class="image-preview-overlay"
+  *ngIf="isPreviewOpen"
+  (click)="closePreview()"
+>
+  <div class="preview-container" (click)="$event.stopPropagation()">
+    <button type="button" class="close-button" (click)="closePreview()">
+      <fa-icon [icon]="faTimes"></fa-icon>
+    </button>
+    <img [src]="imageSource" alt="Preview image" class="preview-image" />
+  </div>
+</div>

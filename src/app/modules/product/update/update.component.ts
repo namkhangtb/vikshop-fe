@@ -14,6 +14,7 @@ import { faBox, faFileImage } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgxMaskDirective } from 'ngx-mask';
 import { ToastrService } from 'ngx-toastr';
+import { ImageViewerComponent } from '@shared/components';
 
 @Component({
   selector: 'app-update',
@@ -25,6 +26,7 @@ import { ToastrService } from 'ngx-toastr';
     UploadModule,
     FontAwesomeModule,
     NgxMaskDirective,
+    ImageViewerComponent,
   ],
   templateUrl: './update.component.html',
   styleUrl: './update.component.scss',

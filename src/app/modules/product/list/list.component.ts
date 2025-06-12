@@ -15,7 +15,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastrService } from 'ngx-toastr';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { FormsModule } from '@angular/forms';
-import { DeleteModalComponent } from '@shared/components';
+import { DeleteModalComponent, ImageViewerComponent } from '@shared/components';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -29,6 +29,7 @@ import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
     PaginationModule,
     FormsModule,
     DeleteModalComponent,
+    ImageViewerComponent,
   ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss',
@@ -128,15 +129,19 @@ export class ListComponent {
 
   confirmDeleteProduct() {
     this.productService.deleteProduct(this.selectedProduct.id).subscribe({
-      next: () => {
-        this.fetchProducts();
-        this.modalRef?.hide();
-        this.toastr.success('Xóa sản phẩm thành công!');
+      next: (res) => {
+        if (res.statusText === 'ERROR') {
+          this.modalRef?.hide();
+          this.toastr.error(`Lỗi: ${res.message}`);
+        } else {
+          this.fetchProducts();
+          this.modalRef?.hide();
+          this.toastr.success('Xóa sản phẩm thành công!');
+        }
       },
       error: (err) => {
-        console.error('Lỗi khi xóa sản phẩm', err);
         this.modalRef?.hide();
-        this.toastr.error('Xóa sản phẩm thất bại!');
+        this.toastr.error(`Xóa sản phẩm thất bại: ${err.error.message}`);
       },
     });
   }

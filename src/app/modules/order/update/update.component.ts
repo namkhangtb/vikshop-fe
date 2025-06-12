@@ -28,6 +28,7 @@ import { ProductModule } from '../../product/product.module';
 import { Product } from '../../product/types';
 import { environment } from 'environments/environment';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { ImageViewerComponent } from '@shared/components';
 
 @Component({
   selector: 'app-update',
@@ -41,6 +42,7 @@ import { debounceTime, Subject, takeUntil } from 'rxjs';
     ToastrModule,
     NgxMaskDirective,
     ProductModule,
+    ImageViewerComponent,
   ],
   templateUrl: './update.component.html',
   styleUrl: './update.component.scss',
