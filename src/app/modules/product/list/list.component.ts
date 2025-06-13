@@ -101,6 +101,11 @@ export class ListComponent {
     this.fetchProducts();
   }
 
+  onPageSizeChange() {
+    this.page = 1;
+    this.fetchProducts();
+  }
+
   openAddProductModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template);
   }

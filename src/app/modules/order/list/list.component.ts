@@ -96,6 +96,11 @@ export class ListComponent {
     this.fetchOrders();
   }
 
+  onPageSizeChange() {
+    this.page = 1;
+    this.fetchOrders();
+  }
+
   openAddOrderModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template);
   }
