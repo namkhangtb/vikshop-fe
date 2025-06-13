@@ -189,13 +189,12 @@ export class UpdateComponent implements OnInit {
       next: (res) => {
         if (res.statusText === 'ERROR') {
           this.toastr.error(`Lỗi: ${res.message}`);
-          this.isLoading = false;
         } else {
           this.toastr.success('Cập nhật đơn hàng thành công!');
           this.updated.emit();
           this.close();
-          this.isLoading = false;
         }
+        this.isLoading = false;
       },
       error: (err) => {
         this.toastr.error(`Cập nhật đơn hàng thất bại: ${err.error.message}`);

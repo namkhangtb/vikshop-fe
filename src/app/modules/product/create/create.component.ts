@@ -121,17 +121,32 @@ export class CreateComponent {
       return;
     }
     this.isLoading = true;
+
+    const numericFields = [
+      'retailPrice',
+      'importPrice',
+      'wholesalePrice',
+      'livestreamPrice',
+      'marketPrice',
+      'upsalePrice',
+      'weight',
+    ];
+    numericFields.forEach((field) => {
+      if (!this.productForm.get(field)?.value) {
+        this.productForm.get(field)?.setValue(0);
+      }
+    });
+
     this.productService.createProduct(this.productForm.value).subscribe({
       next: (res) => {
         if (res.statusText === 'ERROR') {
           this.toastr.error(`Lỗi: ${res.message}`);
-          this.isLoading = false;
         } else {
           this.toastr.success('Tạo sản phẩm thành công');
           this.added.emit();
           this.close();
-          this.isLoading = false;
         }
+        this.isLoading = false;
       },
       error: (err) => {
         this.toastr.error(`Tạo sản phẩm thất bại: ${err.error.message}`);

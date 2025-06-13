@@ -74,18 +74,33 @@ export class UpdateComponent {
   onSubmit(): void {
     if (this.productForm.valid) {
       this.isLoading = true;
+
+      const numericFields = [
+        'retailPrice',
+        'importPrice',
+        'wholesalePrice',
+        'livestreamPrice',
+        'marketPrice',
+        'upsalePrice',
+        'weight'
+      ];
+      numericFields.forEach(field => {
+        if (!this.productForm.get(field)?.value) {
+          this.productForm.get(field)?.setValue(0);
+        }
+      });
+
       this.productService
         .updateProduct(this.productForm.value, this.id)
         .subscribe({
           next: (res) => {
             if (res.statusText == 'ERROR') {
               this.toastr.error(`Lỗi: ${res.message}`);
-              this.isLoading = false;
             } else {
-              this.isLoading = false;
               this.updated.emit();
               this.toastr.success('Cập nhật sản phẩm thành công');
             }
+            this.isLoading = false;
           },
           error: (err) => {
             this.toastr.error(
