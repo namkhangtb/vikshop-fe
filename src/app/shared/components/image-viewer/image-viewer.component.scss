@@ -87,15 +87,36 @@
     font-size: 32px;
     cursor: pointer;
     padding: 10px;
-    border-radius: 50%;
-    z-index: 1100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s, transform 0.2s;
+    z-index: 1001;
+    transition: transform 0.2s ease;
 
     &:hover {
       transform: scale(1.1);
+    }
+  }
+
+  .nav-button {
+    position: absolute;
+    top: 50%;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 20px;
+    border-radius: 50%;
+    z-index: 1001;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &.prev-button {
+      left: 20px;
+    }
+
+    &.next-button {
+      right: 20px;
     }
   }
 }

@@ -237,9 +237,13 @@ export class CreateComponent {
     return product ? product.name : '';
   }
 
-  getProductImage(productId: string): string | null {
+  getProductImageUrls(productId: string): string[] {
     const product = this.products.find((p) => p.id === productId);
-    return product ? product.images[0] : null;
+    const images = product?.images;
+
+    return images && images.length
+      ? images.map((img: string) => this.urlImage + img)
+      : ['./assets/images/no-image.png'];
   }
 
   ngOnDestroy() {

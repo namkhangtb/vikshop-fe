@@ -2,7 +2,7 @@
   class="image-container border-0 shadow-sm overflow-hidden"
   (click)="openPreview()"
 >
-  <img [src]="imageSource" alt="Image" class="image-content" />
+  <img [src]="currentImage" alt="Image" class="image-content" />
   <div
     class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-50 overlay"
   >
@@ -36,6 +36,25 @@
     <button type="button" class="close-button" (click)="closePreview()">
       <fa-icon [icon]="faTimes"></fa-icon>
     </button>
-    <img [src]="imageSource" alt="Preview image" class="preview-image" />
+
+    <button
+      *ngIf="isMultipleMode && imageList.length > 1"
+      type="button"
+      class="nav-button prev-button"
+      (click)="previousImage($event)"
+    >
+      <fa-icon [icon]="faChevronLeft"></fa-icon>
+    </button>
+
+    <img [src]="currentImage" alt="Preview image" class="preview-image" />
+
+    <button
+      *ngIf="isMultipleMode && imageList.length > 1"
+      type="button"
+      class="nav-button next-button"
+      (click)="nextImage($event)"
+    >
+      <fa-icon [icon]="faChevronRight"></fa-icon>
+    </button>
   </div>
 </div>

@@ -279,18 +279,22 @@ export class UpdateComponent implements OnInit {
     return '';
   }
 
-  getProductImage(productId: string): string | null {
-    console.log(this.productMap);
-
+  getProductImageUrls(productId: string): string[] {
     if (this.productMap[productId]) {
-      return this.productMap[productId].images?.[0] ?? null;
+      const images = this.productMap[productId].images || [];
+      return images.length > 0
+        ? images.map(img => this.urlImage + img)
+        : ['./assets/images/no-image.png'];
     }
     const product = this.products.find((p) => p.id === productId);
     if (product) {
       this.productMap[productId] = product;
-      return product.images?.[0] ?? null;
+      const images = product.images || [];
+      return images.length > 0
+        ? images.map(img => this.urlImage + img)
+        : ['./assets/images/no-image.png'];
     }
-    return null;
+    return ['./assets/images/no-image.png'];
   }
 
   ngOnDestroy() {

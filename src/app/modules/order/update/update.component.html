@@ -9,7 +9,8 @@
         class="modal-header bg-gradient bg-primary text-white border-0 py-4 rounded-top-4"
       >
         <h4 class="mb-0 text-center fw-bold w-100 fs-4">
-          <fa-icon [icon]="faCartShopping" class="me-2"></fa-icon>Cập nhật Đơn Hàng
+          <fa-icon [icon]="faCartShopping" class="me-2"></fa-icon>Cập nhật Đơn
+          Hàng
         </h4>
         <button
           type="button"
@@ -40,7 +41,8 @@
                   }"
                 />
                 <label for="name" class="fw-semibold">
-                  <fa-icon [icon]="faUser" class="me-1 text-primary"></fa-icon>Họ tên
+                  <fa-icon [icon]="faUser" class="me-1 text-primary"></fa-icon
+                  >Họ tên
                 </label>
                 <div class="invalid-feedback">Vui lòng nhập tên</div>
               </div>
@@ -63,7 +65,11 @@
                   mask="(000) 000 00 00"
                 />
                 <label for="phone" class="fw-semibold">
-                  <fa-icon [icon]="faMobileScreen" class="me-1 text-primary"></fa-icon>Số điện thoại
+                  <fa-icon
+                    [icon]="faMobileScreen"
+                    class="me-1 text-primary"
+                  ></fa-icon
+                  >Số điện thoại
                 </label>
                 <div class="invalid-feedback">Số điện thoại không hợp lệ</div>
               </div>
@@ -84,7 +90,11 @@
                   }"
                 />
                 <label for="email" class="fw-semibold">
-                  <fa-icon [icon]="faEnvelope" class="me-1 text-primary"></fa-icon>Email
+                  <fa-icon
+                    [icon]="faEnvelope"
+                    class="me-1 text-primary"
+                  ></fa-icon
+                  >Email
                 </label>
                 <div class="invalid-feedback">Email không hợp lệ</div>
               </div>
@@ -94,7 +104,8 @@
           <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-light border-0 py-3">
               <label class="form-label fw-semibold mb-0">
-                <fa-icon [icon]="faBox" class="me-1 text-primary"></fa-icon>Sản phẩm
+                <fa-icon [icon]="faBox" class="me-1 text-primary"></fa-icon>Sản
+                phẩm
               </label>
             </div>
             <div class="card-body">
@@ -124,16 +135,21 @@
                   style="transition: all 0.3s ease"
                 >
                   <div class="d-flex align-items-center gap-3">
-                    <span class="badge bg-primary rounded-pill px-3 py-2">{{ i + 1 }}</span>
-                    <ng-container *ngIf="getProductImage(group.get('productId')?.value)">
-                      <app-image-viewer
-                        [imageSource]="urlImage + getProductImage(group.get('productId')?.value)"
-                        class="rounded shadow-sm object-fit-cover"
-                        style="width: 80px; height: 80px"
-                      >
-                      </app-image-viewer>
-                    </ng-container>
-                    <span class="fw-semibold">{{ getProductName(group.get("productId")?.value) }}</span>
+                    <span class="badge bg-primary rounded-pill px-3 py-2">{{
+                      i + 1
+                    }}</span>
+                    <app-image-viewer
+                      [imageList]="
+                        getProductImageUrls(group.get('productId')?.value)
+                      "
+                      [isMultipleMode]="true"
+                      class="rounded shadow-sm object-fit-cover"
+                      style="width: 80px; height: 80px"
+                    >
+                    </app-image-viewer>
+                    <span class="fw-semibold">{{
+                      getProductName(group.get("productId")?.value)
+                    }}</span>
                   </div>
                   <div class="d-flex align-items-center gap-2">
                     <input
@@ -174,7 +190,11 @@
                   thousandSeparator="."
                 />
                 <label for="totalAmount" class="fw-semibold">
-                  <fa-icon [icon]="faMoneyBillWave" class="me-1 text-success"></fa-icon>Tổng tiền
+                  <fa-icon
+                    [icon]="faMoneyBillWave"
+                    class="me-1 text-success"
+                  ></fa-icon
+                  >Tổng tiền
                 </label>
               </div>
             </div>
